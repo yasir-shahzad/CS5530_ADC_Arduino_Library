@@ -7,14 +7,14 @@
 
 
 void CS5530::SPI_Init(void) {
-  	pinMode(AFECS,OUTPUT);
- 	digitalWrite(AFECS, LOW);//enabled by default
-	SPI.begin ();//initialisation du bus SPI
-	SPI.setBitOrder(MSBFIRST);      //MSB first
-	SPI.setDataMode(SPI_MODE0);      //mode 0
-	SPI.setClockDivider(SPI_CLOCK_DIV8);   //divide the clock by 8 5MHz
-	delay(1);
-	digitalWrite(AFECS, HIGH);//disable the chip
+    pinMode(AFECS,OUTPUT);
+    digitalWrite(AFECS, LOW);//enabled by default
+    SPI.begin ();//initialisation du bus SPI
+    SPI.setBitOrder(MSBFIRST);      //MSB first
+    SPI.setDataMode(SPI_MODE0);      //mode 0
+    SPI.setClockDivider(SPI_CLOCK_DIV8);   //divide the clock by 8 5MHz
+    delay(1);
+    digitalWrite(AFECS, HIGH);//disable the chip
 }
 
 
@@ -22,7 +22,7 @@ void CS5530::SPI_Init(void) {
   Enable CS5530
 */
 void CS5530::enableChip(void){
-	digitalWrite(AFECS, LOW);
+    digitalWrite(AFECS, LOW);
 }
 
 
@@ -30,7 +30,7 @@ void CS5530::enableChip(void){
   Disable CS5530
 */
 void CS5530::disableChip(void){
-	digitalWrite(AFECS, HIGH);  
+    digitalWrite(AFECS, HIGH);  
 }
 
 
@@ -71,11 +71,11 @@ void CS5530::disableChip(void){
     u8 cmd = 0;
     switch (reg)
     {
-	    case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
-	    case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
-	    case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
+        case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
+        case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
+        case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
     }
-	
+
     tmp =  CS5530_Read_Reg(cmd);
     tmp |= dat;
     CS5530_WriteByte(reg);
@@ -84,16 +84,16 @@ void CS5530::disableChip(void){
 
   void CS5530::CS5530_Reset_Bit(u8 reg, u32 dat) {
      u32 tmp = 0;
-	u8 cmd = 0;
+     u8 cmd = 0;
     switch (reg)
-	{
+    {
 	    case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
-		case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
-		case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
-	}
-	
+	    case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
+	    case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
+    }
+
     tmp =  CS5530_Read_Reg(cmd);
-	tmp &= ~dat;
+    tmp &= ~dat;
     CS5530_WriteByte(reg);
     CS5530_Write4Bytes(tmp);
  }
@@ -101,9 +101,9 @@ void CS5530::disableChip(void){
 
  void CS5530::CS5530_WriteByte(u8 dat)         {
  
-	enableChip();
-	SPI.transfer(dat & 0xFF); 
-	disableChip();	
+    enableChip();
+    SPI.transfer(dat & 0xFF); 
+    disableChip();
   }
 
  void CS5530::CS5530_Write4Bytes(u32 dat)         	{
@@ -113,7 +113,7 @@ void CS5530::disableChip(void){
     for(i=3; i>=0; i--) {
         tmp = (u8)( (dat >> (8*i)) & 0xff);
         CS5530_WriteByte(tmp);
-    }	
+    }
  }
  
 
@@ -130,11 +130,11 @@ void CS5530::disableChip(void){
 u32 CS5530::CS5530_Read4Bytes(void)         {
     int i;                                                      
     u32 dat=0; 
-	u8 currntByte = 0;
+    u8 currntByte = 0;
    
     for(i=0; i<4; i++) {
         dat    <<=    8;   
-        dat    |= CS5530_ReadByte();		
+        dat    |= CS5530_ReadByte();
     }                                                                                                                           
 
     return dat;                                                
@@ -143,10 +143,10 @@ u32 CS5530::CS5530_Read4Bytes(void)         {
 u8 CS5530::CS5530_ReadByte(void)        {
     u8 dat=0;
 	  
-  	enableChip();
-	dat = SPI.transfer(CMD_NULL);
-	disableChip();
-	  	
+    enableChip();
+    dat = SPI.transfer(CMD_NULL);
+    disableChip();
+	  
     return dat;
 }
 
@@ -174,7 +174,7 @@ u32 CS5530::CS5530_Read_Weightsclae()
    if(CS5530_IsReady()==false)
    {
        status = E_AD_STATUS_BUSY;
-	   return -2;	   
+       return -2;
    }
    else
    {    
@@ -187,12 +187,12 @@ u32 CS5530::CS5530_Read_Weightsclae()
 
            status =  E_AD_STATUS_READY;
 
-		   return rec_data;
+           return rec_data;
        }
        else
        {
              status =  E_AD_STATUS_OVERFLOW;
-			 return -1;
+             return -1;
        }       
    }
       
