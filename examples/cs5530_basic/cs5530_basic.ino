@@ -1,3 +1,30 @@
+/*
+WiFi Signal Strength
+Shows RSSI of a predefined network with a graph
+
+RSSI is a percentage in the range -120db to 0db.
+The closer to 0 the better.
+
+Connections:
+WeMos D1 Mini   Nokia 5110    Description
+(ESP8266)       PCD8544 LCD
+
+D2 (GPIO4)      0 RST         Output from ESP to reset display
+D1 (GPIO5)      1 CE          Output from ESP to chip select/enable display
+D6 (GPIO12)     2 DC          Output from display data/command to ESP
+D7 (GPIO13)     3 Din         Output from ESP SPI MOSI to display data input
+D5 (GPIO14)     4 Clk         Output from ESP SPI clock
+3V3             5 Vcc         3.3V from ESP to display
+D0 (GPIO16)     6 BL          3.3V to turn backlight on, or PWM
+G               7 Gnd         Ground
+
+Dependencies:
+https://github.com/adafruit/Adafruit-GFX-Library
+https://github.com/adafruit/Adafruit-PCD8544-Nokia-5110-LCD-library
+- This pull request adds ESP8266 support:
+- https://github.com/adafruit/Adafruit-PCD8544-Nokia-5110-LCD-library/pull/27
+*/
+
 
 #include "Arduino.h"
 
