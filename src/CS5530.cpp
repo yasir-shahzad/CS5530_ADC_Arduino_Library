@@ -36,7 +36,7 @@ void CS5530::disableChip(void){
 
  bool CS5530::CS5530_Reset(void) {
     int i;
-	u32 tmp;
+    u32 tmp;
 	
     //Initilizing SPI port
     for(i=0;i<15;i++) {
@@ -48,7 +48,7 @@ void CS5530::disableChip(void){
     // Reseting CS5530
     CS5530_Write_Reg(CMD_CONFIG_WRITE,  REG_CONFIG_RS);    	
     delay(1);  //Wait 1 milli seconds
-	CS5530_Write_Reg(CMD_CONFIG_WRITE, CMD_NULL); 
+    CS5530_Write_Reg(CMD_CONFIG_WRITE, CMD_NULL); 
 	
     tmp = CS5530_Read_Reg(CMD_CONFIG_READ);	
 
@@ -68,13 +68,13 @@ void CS5530::disableChip(void){
 
   void CS5530::CS5530_Set_Bit(u8 reg, u32 dat) {
     u32 tmp = 0;
-	u8 cmd = 0;
+    u8 cmd = 0;
     switch (reg)
-	{
+    {
 	    case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
-		case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
-		case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
-	}
+	    case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
+	    case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
+    }
 	
     tmp =  CS5530_Read_Reg(cmd);
     tmp |= dat;
