@@ -21,11 +21,9 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
 | VCC | 3.3V |
 | GND | GND |
 | SCK | SCK |
-| MISO | MISO |
-| MOSI | MOSI |
+| SDO | MISO |
+| SDI | MOSI |
 | NSS | 10 |
-| NRESET | 9 |
-| DIO0 | 2 |
 
 
 `NSS`, `NRESET`, and `DIO0` pins can be changed by using `LoRa.setPins(ss, reset, dio0)`. `DIO0` pin is optional, it is only needed for receive callback mode. If `DIO0` pin is used, it **must** be interrupt capable via [`attachInterrupt(...)`](https://www.arduino.cc/en/Reference/AttachInterrupt).
