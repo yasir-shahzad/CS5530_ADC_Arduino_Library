@@ -14,9 +14,9 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
    * **NOTE:** Requires firmware v1.1.6 or later on the on-board Murata module. Please use the [MKRWANFWUpdate_standalone example](https://github.com/arduino-libraries/MKRWAN/blob/master/examples/MKRWANFWUpdate_standalone/MKRWANFWUpdate_standalone.ino) from latest [MKRWAN library](https://github.com/arduino-libraries/MKRWAN) release to update the firmware.
    * **WARNING**: [LoRa.onReceive(...)](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#register-callback) and [LoRa.recieve()](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#receive-mode) is not compatible with this board!
 
-### CS5530 wiring
+###CIRRUS LOGGIC CS5530 wiring
 
-| CS5530 modue | Arduino |
+| CIRRUS LOGGIC CS5530 | Arduino |
 | :---------------------: | :------:|
 | VCC | 3.3V |
 | GND | GND |
@@ -62,7 +62,7 @@ See [examples](examples) folder.
 
 **1) Initilizating the LoRa radio is failing**
 
-Please check the wiring you are using matches what's listed in [Semtech SX1276/77/78/79 wiring](#semtech-sx1276777879-wiring). You can also use `LoRa.setPins(ss, reset, dio0)` to change the default pins used. Some logic level converters cannot operate at 8 MHz, you can call `LoRa.setSPIFrequency(frequency)` to lower the SPI frequency used by the library. Both API's must be called before `LoRa.begin(...)`.
+Please check the wiring you are using matches what's listed in [CIRRUS LOGGIC CS5530](#CIRRUS LOGGIC CS5530-wiring). You can also use `LoRa.setPins(ss, reset, dio0)` to change the default pins used. Some logic level converters cannot operate at 8 MHz, you can call `LoRa.setSPIFrequency(frequency)` to lower the SPI frequency used by the library. Both API's must be called before `LoRa.begin(...)`.
 
 **2) Can other radios see the packets I'm sending?**
 
