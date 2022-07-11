@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/sandeepmistry/arduino-LoRa.svg?branch=master)](https://travis-ci.org/sandeepmistry/arduino-LoRa)
 
-An [Arduino](https://arduino.cc/) library for sending and receiving data using [LoRa](https://www.lora-alliance.org/) radios.
+An [Arduino](https://arduino.cc/) library for sending and receiving data using [Cirrus logic CS5530](https://www.lora-alliance.org/) .
 
 ## Compatible Hardware
 
@@ -14,11 +14,11 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
    * **NOTE:** Requires firmware v1.1.6 or later on the on-board Murata module. Please use the [MKRWANFWUpdate_standalone example](https://github.com/arduino-libraries/MKRWAN/blob/master/examples/MKRWANFWUpdate_standalone/MKRWANFWUpdate_standalone.ino) from latest [MKRWAN library](https://github.com/arduino-libraries/MKRWAN) release to update the firmware.
    * **WARNING**: [LoRa.onReceive(...)](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#register-callback) and [LoRa.recieve()](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#receive-mode) is not compatible with this board!
 
-### CIRRUS LOGGIC CS5530 wiring
+### Cirrus logic CS5530 wiring
 
-| CIRRUS LOGGIC CS5530 | Arduino |
+| Cirrus logic CS5530 | Arduino |
 | :---------------------: | :------:|
-| VCC | 3.3V |
+| VCC | 5.0V |
 | GND | GND |
 | SCK | SCK |
 | SDO | MISO |
@@ -30,7 +30,7 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
 
 **NOTES**:
  * Some boards (like the Arduino Nano), cannot supply enough current for the SX127x in TX mode. This will cause lockups when sending, be sure to use an external 3.3V supply that can provide at least 120mA's when using these boards.
- * If your Arduino board operates at 5V, like the Arduino Uno, Leonardo or Mega, you will need to use a level converter for the wiring to the Semtech SX127x module. Most Semtech SX127x breakout boards do not have logic level converters built-in.
+ * If your Arduino board operates at 5V or 3.3V, no need to use a level converter for the wiring to the Cirrus logic CS5530 module. 
 
 ## Installation
 
@@ -60,7 +60,7 @@ See [examples](examples) folder.
 
 **1) Initilizating the LoRa radio is failing**
 
-Please check the wiring you are using matches what's listed in [CIRRUS LOGGIC CS5530](#CIRRUS LOGGIC CS5530-wiring). You can also use `LoRa.setPins(ss, reset, dio0)` to change the default pins used. Some logic level converters cannot operate at 8 MHz, you can call `LoRa.setSPIFrequency(frequency)` to lower the SPI frequency used by the library. Both API's must be called before `LoRa.begin(...)`.
+Please check the wiring you are using matches what's listed in [Cirrus logic CS5530](#Cirrus logic CS5530-wiring). You can also use `LoRa.setPins(ss, reset, dio0)` to change the default pins used. Some logic level converters cannot operate at 8 MHz, you can call `LoRa.setSPIFrequency(frequency)` to lower the SPI frequency used by the library. Both API's must be called before `LoRa.begin(...)`.
 
 **2) Can other radios see the packets I'm sending?**
 
