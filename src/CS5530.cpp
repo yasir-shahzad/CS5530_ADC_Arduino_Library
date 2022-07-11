@@ -27,9 +27,6 @@ int CS5530::begin(long frequency)
 
   // start SPI
   _spi->begin();
-  
-  // set frequency
-  setFrequency(frequency);
 
   return 1;
 }
