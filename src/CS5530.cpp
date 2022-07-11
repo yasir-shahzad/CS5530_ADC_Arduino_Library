@@ -99,14 +99,14 @@ void CS5530::disableChip(void){
  }
 
 
- void CS5530::writeByte(u8 dat)         {
+ void CS5530::writeByte(u8 dat) {
  
     enableChip();
     SPI.transfer(dat & 0xFF); 
     disableChip();
   }
 
- void CS5530::write4Bytes(u32 dat)         	{
+ void CS5530::write4Bytes(u32 dat) {
     int i;
     u8 tmp;
 
@@ -117,7 +117,7 @@ void CS5530::disableChip(void){
  }
  
 
- u32 CS5530::readRegister(u8 reg)      	{
+ u32 CS5530::readRegister(u8 reg) {
     u32 dat;
 	
     writeByte(reg);
@@ -127,20 +127,20 @@ void CS5530::disableChip(void){
  }
 
 
-u32 CS5530::read4Bytes(void)         {
-    int i;                                                      
+u32 CS5530::read4Bytes(void)      {
+    int i;
     u32 dat=0; 
     u8 currntByte = 0;
    
     for(i=0; i<4; i++) {
         dat    <<=    8;   
         dat    |= readByte();
-    }                                                                                                                           
+    }
 
-    return dat;                                                
+    return dat;
 }
 
-u8 CS5530::readByte(void)        {
+u8 CS5530::readByte(void)     {
     u8 dat=0;
 	  
     enableChip();
@@ -152,8 +152,7 @@ u8 CS5530::readByte(void)        {
 
 
 
-bool CS5530::isReady(void)
-{
+bool CS5530::isReady(void) {
     if(digitalRead(12) == 0)
     {
         return true;
@@ -165,8 +164,7 @@ bool CS5530::isReady(void)
 
 
 
-u32 CS5530::readWeightsclae()
-{
+u32 CS5530::readWeightsclae() {
     u32 rec_data = 0;
     
     EAdStatus status;
