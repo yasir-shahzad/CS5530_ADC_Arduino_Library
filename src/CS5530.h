@@ -20,12 +20,12 @@
 #define SYSTEM_OFFSET	3
 #define SYSTEM_GAIN	4
 
-#define SINGLE_CONVERSION	1
+#define SINGLE_CONVERSION	    1
 #define CONTINUED_CONVERSION	2
 
 
 //Alias of Basic Results
-#define PASS              0x0        
+#define PASS              0x0
 #define FAIL              0xff
 #define TRUE              1
 #define FALSE             0
@@ -57,17 +57,17 @@
 
 
 //Configuration Register 
-#define REG_CONFIG_PSS	 	1UL<<31
-#define REG_CONFIG_PDM  	1UL<<30
-#define REG_CONFIG_RS   	1UL<<29
-#define REG_CONFIG_RV 		1UL<<28
-#define REG_CONFIG_IS		1UL<<27
-#define REG_CONFIG_VRS		1UL<<25
-#define REG_CONFIG_A1 		1UL<<24
-#define REG_CONFIG_A0 		1UL<<23
-#define REG_CONFIG_FRS 		1UL<<19
+#define REG_CONFIG_PSS      1UL<<31
+#define REG_CONFIG_PDM      1UL<<30
+#define REG_CONFIG_RS       1UL<<29
+#define REG_CONFIG_RV       1UL<<28
+#define REG_CONFIG_IS       1UL<<27
+#define REG_CONFIG_VRS      1UL<<25
+#define REG_CONFIG_A1       1UL<<24
+#define REG_CONFIG_A0       1UL<<23
+#define REG_CONFIG_FRS      1UL<<19
 #define REG_CONFIG_UNIPOLAR 1UL<<10     //U/B (Unipolar = 1 / Bipolar = 0) 
-#define REG_CONFIG_OCD  	1UL<<9
+#define REG_CONFIG_OCD      1UL<<9
 
 //CS5532 Gain settings
 #define GAINX1  1UL<<24
@@ -100,22 +100,22 @@
 #define CMD_GAIN_WRITE   0x02
 #define CMD_CONFIG_READ  0x0B
 #define CMD_CONFIG_WRITE 0x03
-                                                                                                                       
-#define REG_DATA_OF    1UL << 3                                                                     
+
+#define REG_DATA_OF    1UL << 3
 
 #define CMD_CONVERSION_SIGLE   0x80
 #define CMD_CONVERSION_CONTINU 0xC0
 #define CMD_SYS_OFFSET_CALI    0x85
 #define CMD_SYS_GAIN_CALI      0x86
-#define CMD_SYNC1 			   0xFF
-#define CMD_SYNC0 			   0xFE
-#define CMD_NULL 			   0x00
+#define CMD_SYNC1              0xFF
+#define CMD_SYNC0              0xFE
+#define CMD_NULL               0x00
 
 #define AFECS 10    // chipselect pin for CS5530
 
 enum EAdStatus {
-	E_AD_STATUS_BUSY,
-	E_AD_STATUS_READY,
+    E_AD_STATUS_BUSY,
+    E_AD_STATUS_READY,
     E_AD_STATUS_OVERFLOW
 };
 
@@ -139,9 +139,9 @@ public:
  bool CS5530_IsReady(void);
  bool CS5530_Reset(void);
  u32  CS5530_Read_Weightsclae();
- 
-  
- private:    
+
+
+ private:
  void enableChip(void);  
  void disableChip(void);      
 };
