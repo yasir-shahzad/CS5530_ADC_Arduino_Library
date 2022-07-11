@@ -21,7 +21,7 @@ void CS5530::spiInit(void) {
 /*
   Enable CS5530
 */
-void CS5530::enableChip(void){
+void CS5530::enableChip(void) {
     digitalWrite(AFECS, LOW);
 }
 
@@ -29,8 +29,8 @@ void CS5530::enableChip(void){
 /*
   Disable CS5530
 */
-void CS5530::disableChip(void){
-    digitalWrite(AFECS, HIGH);  
+void CS5530::disableChip(void) {
+    digitalWrite(AFECS, HIGH);
 }
 
 
@@ -40,7 +40,7 @@ void CS5530::disableChip(void){
 	
     //Initilizing SPI port
     for(i=0;i<15;i++) {
-      writeByte(CMD_SYNC1);                                                                     
+      writeByte(CMD_SYNC1);
     }
 	
     writeByte(CMD_SYNC0);
@@ -133,7 +133,7 @@ u32 CS5530::read4Bytes(void)      {
     u8 currntByte = 0;
    
     for(i=0; i<4; i++) {
-        dat    <<=    8;   
+        dat    <<=    8;
         dat    |= readByte();
     }
 
@@ -191,9 +191,9 @@ u32 CS5530::readWeightsclae() {
        {
              status =  E_AD_STATUS_OVERFLOW;
              return -1;
-       }       
+       }
    }
-      
+
    // return status;
 }
 
@@ -267,7 +267,7 @@ u8 CS5530::Convert(u8 convert_type, u8 setup_reg_no, u8 reg_no, int word_rate) {
 	final_result = final_result * 500 / 0x7fffff;
 	Serial.print("The fianl result is:"); Serial.println(final_result);
 
-	return 1; 
+	return 1;
 }
 
 
