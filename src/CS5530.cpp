@@ -18,7 +18,24 @@ void CS5530::spiInit(int ss) {
     digitalWrite(_ss, HIGH);//disable the chip
 }
 
-void CS5530::setPins(int ss = 10;)
+int CS5530::begin(long frequency)
+{
+  // setup pins
+  pinMode(_ss, OUTPUT);
+  // set SS high
+  digitalWrite(_ss, HIGH);
+
+  // start SPI
+  _spi->begin();
+  
+  // set frequency
+  setFrequency(frequency);
+
+  return 1;
+}
+
+
+void CS5530::setPins(int ss)
 {
   _ss = ss;
 }
@@ -28,13 +45,10 @@ void CS5530::setSPI(SPIClass& spi)
   _spi = &spi;
 }
 
-void CS5530::setSPIFrequency(uint32_t frequency)
+void CS5530::setSPIFrequency(u32 frequency)
 {
   _spiSettings = SPISettings(frequency, MSBFIRST, SPI_MODE0);
 }
-
-
-
 
 bool CS5530::reset(void) {
     int i;
@@ -104,7 +118,9 @@ void CS5530::resetBit(u8 reg, u32 dat) {
 void CS5530::writeByte(u8 dat) {
  
     digitalWrite(_ss, LOW);
+	_spi->beginTransaction(_spiSettings);
     SPI.transfer(dat & 0xFF); 
+	_spi->endTransaction();
     digitalWrite(_ss, HIGH);
 }
 
@@ -146,7 +162,9 @@ u8 CS5530::readByte(void)     {
     u8 dat=0;
 	  
     digitalWrite(_ss, LOW);
+	_spi->beginTransaction(_spiSettings);
     dat = SPI.transfer(CMD_NULL);
+	_spi->endTransaction();
     digitalWrite(_ss, HIGH);
 	  
     return dat;

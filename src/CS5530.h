@@ -15,6 +15,7 @@
 #define RESET_TIME 1200000
 #define WASTE_TIME 90000000
 
+
 #define SELF_OFFSET     1
 #define SELF_GAIN       2
 #define SYSTEM_OFFSET   3
@@ -53,6 +54,7 @@
  
 #define ERR_FILTER_ONGOING 3
 
+
 //2.3.9. Configuration Register Descriptions
 #define REG_CONFIG_PSS      1UL << 31     //Power Save Select
 #define REG_CONFIG_PDM      1UL << 30     //Power Down Mode
@@ -63,8 +65,7 @@
 #define REG_CONFIG_A1       1UL << 24
 #define REG_CONFIG_A0       1UL << 23
 #define REG_CONFIG_FRS      1UL << 19     //Filter Rate Select
-#define REG_CONFIG_UNIPOLAR 1UL << 10     //U/B (Unipolar = 1 / Bipolar = 0) 
-#define REG_CONFIG_OCD      1UL <<  9
+#define REG_CONFIG_OCD      1UL << 9
 
 //CS5532 Gain settings
 #define GAINX1              1UL  << 24
@@ -93,6 +94,8 @@
 #define REG_DATA_OF         1UL << 3
 
 #define CMD_STOP_CONT_CONV  0xFF
+#define LORA_DEFAULT_SS_PIN   10
+
 
 //Command Register (CS5530_COMM_REG)
 #define CMD_OFFSET_READ         0x09
@@ -123,9 +126,12 @@ class CS5530 {
 public:
 
  void spiInit(int);
+ void setPins(int ss = LORA_DEFAULT_SS_PIN);
+ void setSPI(SPIClass& spi);
+ void setSPIFrequency(u32);
  u32 twoComplement(u32);
  u8 readByte(void);
- u32 read4Bytes(void);   
+ u32 read4Bytes(void);
  u32 readRegister(u8);
  u8 convert(u8, u8, u8, int);
  u8 calibrate(u8, int, int);
