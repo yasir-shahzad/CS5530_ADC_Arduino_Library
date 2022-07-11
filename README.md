@@ -1,4 +1,4 @@
-# Arduino LoRa
+# Arduino CS5530
 
 [![Build Status](https://travis-ci.org/sandeepmistry/arduino-LoRa.svg?branch=master)](https://travis-ci.org/sandeepmistry/arduino-LoRa)
 
@@ -14,9 +14,9 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
    * **NOTE:** Requires firmware v1.1.6 or later on the on-board Murata module. Please use the [MKRWANFWUpdate_standalone example](https://github.com/arduino-libraries/MKRWAN/blob/master/examples/MKRWANFWUpdate_standalone/MKRWANFWUpdate_standalone.ino) from latest [MKRWAN library](https://github.com/arduino-libraries/MKRWAN) release to update the firmware.
    * **WARNING**: [LoRa.onReceive(...)](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#register-callback) and [LoRa.recieve()](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#receive-mode) is not compatible with this board!
 
-### Semtech SX1276/77/78/79 wiring
+### CS5530 wiring
 
-| Semtech SX1276/77/78/79 | Arduino |
+| CS5530 modue | Arduino |
 | :---------------------: | :------:|
 | VCC | 3.3V |
 | GND | GND |
@@ -39,7 +39,7 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
 ### Using the Arduino IDE Library Manager
 
 1. Choose `Sketch` -> `Include Library` -> `Manage Libraries...`
-2. Type `LoRa` into the search box.
+2. Type `CS5530` into the search box.
 3. Click the row to select the library.
 4. Click the `Install` button to install the library.
 
@@ -47,7 +47,7 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
 
 ```sh
 cd ~/Documents/Arduino/libraries/
-git clone https://github.com/sandeepmistry/arduino-LoRa LoRa
+git clone https://github.com/yasir-shahzad/CS5530 LoRa
 ```
 
 ## API
