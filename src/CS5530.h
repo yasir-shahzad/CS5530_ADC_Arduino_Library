@@ -141,8 +141,9 @@ public:
 
 
 private:
-void enableChip(void);
-void disableChip(void);
+ int _ss;
+ void enableChip(void);
+ void disableChip(void);
 };
 
 #endif
