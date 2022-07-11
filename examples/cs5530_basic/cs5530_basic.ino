@@ -36,37 +36,37 @@ i32 value;
 void setup() {
     Serial.begin(115200);
  
-    cell.SPI_Init();   //SPI settings for CS5530
-    if (cell.CS5530_Reset())
+    cell.spiInit();   //SPI settings for CS5530
+    if (cell.Reset())
     	Serial.println("Starting CS5530 failed");
     else
     	Serial.println("CS5530 not working");
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
-    u32 tmp = cell.CS5530_Read_Reg(CMD_CONFIG_READ);
+    u32 tmp = cell.readRegister(CMD_CONFIG_READ);
     Serial.print("CONFIG Register:");
     Serial.println(tmp, BIN);
 
     //u32 tmpdata = REG_CONFIG_UNIPOLAR | REG
 
-	cell.CS5530_Write_Reg(CMD_CONFIG_WRITE, REG_CONFIG_UNIPOLAR);
+	cell.writeRegister(CMD_CONFIG_WRITE, REG_CONFIG_UNIPOLAR);
 
   
     //cell.Convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS );
 
-	u32 cmpl = cell.TwoComplement(0xFFFFFFFF);
+	u32 cmpl = cell.twoComplement(0xFFFFFFFF);
 
 	
-	 cell.CS5530_WriteByte(CMD_CONVERSION_CONTINU);
-     cell.CS5530_Write_Reg(CMD_OFFSET_WRITE, cmpl);
+	 cell.writeByte(CMD_CONVERSION_CONTINU);
+     cell.writeRegister(CMD_OFFSET_WRITE, cmpl);
 	
 
 }
 
 
 void loop() {    
-		i32 recData = cell.CS5530_Read_Weightsclae();
+		i32 recData = cell.readWeightsclae();
 		
 		if(recData > 0) {
 			
@@ -78,9 +78,7 @@ void loop() {
 			//Serial.print(recData); Serial.println(" data");
         //  Serial.print((value - 34250)/105);
 
-			 Serial.print((value - 111683  )/18 );
-       // Serial.print((value - 111900)/73 );
-		  Serial.println(" grms");
+		  Serial.print(((value - 111683  )/18) + " grms" );
 		  startTime = millis()+200;
 		}
 		

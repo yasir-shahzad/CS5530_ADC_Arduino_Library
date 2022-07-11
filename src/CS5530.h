@@ -123,21 +123,21 @@ enum EAdStatus {
 class CS5530 {
 public:
 
- void SPI_Init(void);
- u32 TwoComplement(u32);
- u8 CS5530_ReadByte(void);
- u32 CS5530_Read4Bytes(void);   
- u32 CS5530_Read_Reg(u8);
+ void spiInit(void);
+ u32 twoComplement(u32);
+ u8 readByte(void);
+ u32 read4Bytes(void);   
+ u32 readRegister(u8);
  u8 Convert(u8, u8, u8, int);
  u8 Calibrate(u8, int, int);
- void CS5530_Write4Bytes(u32);
- void CS5530_WriteByte(u8);
- void CS5530_Write_Reg(u8, u32);
- void CS5530_Set_Bit(u8, u32);
- void CS5530_Reset_Bit(u8, u32);
- bool CS5530_IsReady(void);
- bool CS5530_Reset(void);
- u32  CS5530_Read_Weightsclae();
+ void write4Bytes(u32);
+ void writeByte(u8);
+ void writeRegister(u8, u32);
+ void setBit(u8, u32);
+ void resetBit(u8, u32);
+ bool isReady(void);
+ bool Reset(void);
+ u32  readWeightsclae();
 
 
  private:

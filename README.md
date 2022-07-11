@@ -62,9 +62,9 @@ See [examples](examples) folder.
 
 Please check the wiring you are using matches what's listed in [Cirrus logic CS5530](# Cirrus logic CS5530-wiring). You can also use `LoRa.setPins(ss, reset, dio0)` to change the default pins used. Some logic level converters cannot operate at 8 MHz, you can call `LoRa.setSPIFrequency(frequency)` to lower the SPI frequency used by the library. Both API's must be called before `LoRa.begin(...)`.
 
-**2) Can other radios see the packets I'm sending?**
+**2) Is CS5530 MSBFIRST or LSBFIRST?**
 
-Yes, any LoRa radio that are configured with the same radio parameters and in range can see the packets you send.
+If we see in the datasheet we can clearly see the CS5530 is MSBFIRST.
 
 **3) Is the data I'm sending encrypted?**
 
