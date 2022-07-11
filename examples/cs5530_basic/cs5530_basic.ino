@@ -38,9 +38,9 @@ void setup() {
  
     cell.SPI_Init();   //SPI settings for CS5530
     if (cell.CS5530_Reset())
-    Serial.println("CS5530 Initilized");
+    	Serial.println("Starting CS5530 failed");
     else
-    Serial.println("CS5530 not working");
+    	Serial.println("CS5530 not working");
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
