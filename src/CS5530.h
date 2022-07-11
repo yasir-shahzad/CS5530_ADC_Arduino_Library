@@ -15,13 +15,13 @@
 #define RESET_TIME 1200000
 #define WASTE_TIME 90000000
 
-#define SELF_OFFSET 1
-#define SELF_GAIN	2
-#define SYSTEM_OFFSET	3
-#define SYSTEM_GAIN	4
+#define SELF_OFFSET     1
+#define SELF_GAIN       2
+#define SYSTEM_OFFSET   3
+#define SYSTEM_GAIN     4
 
-#define SINGLE_CONVERSION	    1
-#define CONTINUED_CONVERSION	2
+#define SINGLE_CONVERSION       1
+#define CONTINUED_CONVERSION    2
 
 
 //Alias of Basic Results
@@ -43,7 +43,7 @@
  
 #define CAL_TIMEOUT_LIMIT 4000
 
-#define READ_CONV_RESULT 0x00
+#define READ_CONV_RESULT  0x00
 
 
   
@@ -51,7 +51,7 @@
  
 #define ERR_AD_BUSY 1 
  
-#define ERR_AD_OVER_FLOW 2
+#define ERR_AD_OVER_FLOW   2
  
 #define ERR_FILTER_ONGOING 3
 

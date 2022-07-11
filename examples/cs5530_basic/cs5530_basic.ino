@@ -1,7 +1,7 @@
 /*
 Connections:
-Arduino NANO     CS 5530    Description
-(ATMEGA 328P)   24bit ADC
+Arduino NANO/Uno     CS5530    Description
+(ATMEGA 328P)      24bit ADC
 
 D2 (GPIO4)      0 RST         Output from ESP to reset display
 D1 (GPIO5)      1 CE          Output from ESP to chip select/enable display
