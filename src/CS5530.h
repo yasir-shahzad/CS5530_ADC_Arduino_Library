@@ -34,22 +34,21 @@
 
 #define CS5532_READ_DATA_TIMEOUT 2000000
 
- 
-#define CMD_STOP_CONT_CONV 0xFF
-  
 #define TIMEOUTERR 0xff
  
-#define SUCCESSFUL 0x0  
- 
-#define CAL_TIMEOUT_LIMIT 4000
+#define SUCCESSFUL 0x0
 
-#define READ_CONV_RESULT  0x00
+#define CMD_STOP_CONT_CONV 0xff
+
+#define CAL_TIMEOUT_LIMIT  4000
+
+#define READ_CONV_RESULT   0x00
 
 
   
 #define DATA_VALID 0
  
-#define ERR_AD_BUSY 1 
+#define ERR_AD_BUSY 1
  
 #define ERR_AD_OVER_FLOW   2
  
@@ -114,9 +113,9 @@
 #define AFECS 10    // chipselect pin for CS5530
 
 enum EAdStatus {
-    E_AD_STATUS_BUSY,
-    E_AD_STATUS_READY,
-    E_AD_STATUS_OVERFLOW
+   E_AD_STATUS_BUSY,
+   E_AD_STATUS_READY,
+   E_AD_STATUS_OVERFLOW
 };
 
 
@@ -142,8 +141,8 @@ public:
 
 
  private:
- void enableChip(void);  
- void disableChip(void);      
+ void enableChip(void);
+ void disableChip(void);
 };
 
 #endif
