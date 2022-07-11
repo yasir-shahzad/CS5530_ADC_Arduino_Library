@@ -34,9 +34,9 @@
 
 #define CS5532_READ_DATA_TIMEOUT 2000000
 
-#define TIMEOUTERR 0xff
+#define TIMEOUTERR         0xff
  
-#define SUCCESSFUL 0x0
+#define SUCCESSFUL         0x0
 
 #define CMD_STOP_CONT_CONV 0xff
 
@@ -46,7 +46,7 @@
 
 
   
-#define DATA_VALID 0
+#define DATA_VALID  0
  
 #define ERR_AD_BUSY 1
  
