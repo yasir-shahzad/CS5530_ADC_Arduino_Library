@@ -45,7 +45,6 @@
 #define READ_CONV_RESULT   0x00
 
 
-  
 #define DATA_VALID  0
  
 #define ERR_AD_BUSY 1
@@ -53,7 +52,6 @@
 #define ERR_AD_OVER_FLOW   2
  
 #define ERR_FILTER_ONGOING 3
-
 
 //2.3.9. Configuration Register Descriptions
 #define REG_CONFIG_PSS      1UL << 31     //Power Save Select
