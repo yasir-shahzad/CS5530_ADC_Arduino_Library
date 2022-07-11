@@ -128,20 +128,20 @@ public:
  u8 readByte(void);
  u32 read4Bytes(void);   
  u32 readRegister(u8);
- u8 Convert(u8, u8, u8, int);
- u8 Calibrate(u8, int, int);
+ u8 convert(u8, u8, u8, int);
+ u8 calibrate(u8, int, int);
  void write4Bytes(u32);
  void writeByte(u8);
  void writeRegister(u8, u32);
  void setBit(u8, u32);
  void resetBit(u8, u32);
  bool isReady(void);
- bool Reset(void);
+ bool reset(void);
  u32  readWeightsclae();
 
 
 private:
-	SPISettings _spiSettings;
+ SPISettings _spiSettings;
  int _ss;
 };
 

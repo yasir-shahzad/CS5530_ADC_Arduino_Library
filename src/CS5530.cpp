@@ -18,7 +18,7 @@ void CS5530::spiInit(void) {
 }
 
 
-bool CS5530::Reset(void) {
+bool CS5530::reset(void) {
     int i;
     u32 tmp;
 	
@@ -182,7 +182,7 @@ u32 CS5530::readWeightsclae() {
 }
 
 
-u8 CS5530::Calibrate(u8 calibrate_type, int cfg_reg, int setup_reg) { 
+u8 CS5530::calibrate(u8 calibrate_type, int cfg_reg, int setup_reg) { 
 	u32 calibrate_result;
 	int waste_time, i;
 	cfg_reg = (int)((calibrate_type % 2 == 1) ? (cfg_reg|REG_CONFIG_IS):(cfg_reg));
@@ -216,7 +216,7 @@ u32 CS5530::twoComplement(u32 n) {
 
 
 
-u8 CS5530::Convert(u8 convert_type, u8 setup_reg_no, u8 reg_no, int word_rate) {
+u8 CS5530::convert(u8 convert_type, u8 setup_reg_no, u8 reg_no, int word_rate) {
 	Serial.print("Prepare for conversion.\n");
 	u32 final_result = 0;
 	int waste_time, i;
