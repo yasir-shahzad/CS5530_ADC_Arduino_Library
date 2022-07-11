@@ -6,7 +6,8 @@
 
 
 
-void CS5530::spiInit(void) {
+void CS5530::spiInit(int ss) {
+    _ss = ss;
     pinMode(_ss,OUTPUT);
     digitalWrite(_ss, LOW);//enabled by default
     SPI.begin ();//initialisation du bus SPI
@@ -16,6 +17,23 @@ void CS5530::spiInit(void) {
     delay(1);
     digitalWrite(_ss, HIGH);//disable the chip
 }
+
+void CS5530::setPins(int ss = 10;)
+{
+  _ss = ss;
+}
+
+void CS5530::setSPI(SPIClass& spi)
+{
+  _spi = &spi;
+}
+
+void CS5530::setSPIFrequency(uint32_t frequency)
+{
+  _spiSettings = SPISettings(frequency, MSBFIRST, SPI_MODE0);
+}
+
+
 
 
 bool CS5530::reset(void) {
@@ -37,10 +55,10 @@ bool CS5530::reset(void) {
     tmp = readRegister(CMD_CONFIG_READ);	
 
     if(tmp & REG_CONFIG_RV) {
-        return true;
+     return true;
     }
 
-    return false;
+  return false;
 }
 
 
