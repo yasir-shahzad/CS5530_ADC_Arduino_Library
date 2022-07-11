@@ -68,7 +68,6 @@
 #define REG_CONFIG_UNIPOLAR 1UL << 10     //U/B (Unipolar = 1 / Bipolar = 0) 
 #define REG_CONFIG_OCD      1UL <<  9
 
-
 //CS5532 Gain settings
 #define GAINX1              1UL  << 24
 #define GAINX2              2UL  << 24
@@ -77,7 +76,6 @@
 #define GAINX16             16UL << 24
 #define GAINX32             32UL << 24
 #define GAINX64             64UL << 24
-
 
 //Word Rate when FSR=1
 #define WORD_RATE_100SPS    0x0 << 11
@@ -96,9 +94,7 @@
 #define CS5530_BIPOLAR      0UL << 10
 #define REG_DATA_OF         1UL << 3
 
-
 #define CMD_STOP_CONT_CONV  0xFF
-
 
 //Command Register (CS5530_COMM_REG)
 #define CMD_OFFSET_READ         0x09
