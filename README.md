@@ -14,7 +14,7 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
    * **NOTE:** Requires firmware v1.1.6 or later on the on-board Murata module. Please use the [MKRWANFWUpdate_standalone example](https://github.com/arduino-libraries/MKRWAN/blob/master/examples/MKRWANFWUpdate_standalone/MKRWANFWUpdate_standalone.ino) from latest [MKRWAN library](https://github.com/arduino-libraries/MKRWAN) release to update the firmware.
    * **WARNING**: [LoRa.onReceive(...)](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#register-callback) and [LoRa.recieve()](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#receive-mode) is not compatible with this board!
 
-###CIRRUS LOGGIC CS5530 wiring
+### CIRRUS LOGGIC CS5530 wiring
 
 | CIRRUS LOGGIC CS5530 | Arduino |
 | :---------------------: | :------:|
