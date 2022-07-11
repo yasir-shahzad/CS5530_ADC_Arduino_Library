@@ -34,7 +34,7 @@ void CS5530::disableChip(void) {
 }
 
 
- bool CS5530::Reset(void) {
+bool CS5530::Reset(void) {
     int i;
     u32 tmp;
 	
@@ -57,16 +57,16 @@ void CS5530::disableChip(void) {
     }
 
     return false;
- }
+}
 
 
- void CS5530::writeRegister(u8 reg, u32 dat) {
+void CS5530::writeRegister(u8 reg, u32 dat) {
  
     writeByte(reg);
     write4Bytes(dat);
- }
+}
 
-  void CS5530::setBit(u8 reg, u32 dat) {
+void CS5530::setBit(u8 reg, u32 dat) {
     u32 tmp = 0;
     u8 cmd = 0;
     switch (reg)
@@ -80,9 +80,9 @@ void CS5530::disableChip(void) {
     tmp |= dat;
     writeByte(reg);
     write4Bytes(tmp);
- }
+}
 
-  void CS5530::resetBit(u8 reg, u32 dat) {
+void CS5530::resetBit(u8 reg, u32 dat) {
      u32 tmp = 0;
      u8 cmd = 0;
     switch (reg)
@@ -96,17 +96,17 @@ void CS5530::disableChip(void) {
     tmp &= ~dat;
     writeByte(reg);
     write4Bytes(tmp);
- }
+}
 
 
- void CS5530::writeByte(u8 dat) {
+void CS5530::writeByte(u8 dat) {
  
     enableChip();
     SPI.transfer(dat & 0xFF); 
     disableChip();
-  }
+}
 
- void CS5530::write4Bytes(u32 dat) {
+void CS5530::write4Bytes(u32 dat) {
     int i;
     u8 tmp;
 
@@ -114,17 +114,17 @@ void CS5530::disableChip(void) {
         tmp = (u8)( (dat >> (8*i)) & 0xff);
         writeByte(tmp);
     }
- }
+}
  
 
- u32 CS5530::readRegister(u8 reg) {
+u32 CS5530::readRegister(u8 reg) {
     u32 dat;
 	
     writeByte(reg);
     dat = read4Bytes();
 	
     return dat;
- }
+}
 
 
 u32 CS5530::read4Bytes(void)      {

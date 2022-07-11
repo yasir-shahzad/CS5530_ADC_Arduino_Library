@@ -123,26 +123,26 @@ enum EAdStatus {
 class CS5530 {
 public:
 
- void spiInit(void);
- u32 twoComplement(u32);
- u8 readByte(void);
- u32 read4Bytes(void);   
- u32 readRegister(u8);
- u8 Convert(u8, u8, u8, int);
- u8 Calibrate(u8, int, int);
- void write4Bytes(u32);
- void writeByte(u8);
- void writeRegister(u8, u32);
- void setBit(u8, u32);
- void resetBit(u8, u32);
- bool isReady(void);
- bool Reset(void);
- u32  readWeightsclae();
+void spiInit(void);
+u32 twoComplement(u32);
+u8 readByte(void);
+u32 read4Bytes(void);   
+u32 readRegister(u8);
+u8 Convert(u8, u8, u8, int);
+u8 Calibrate(u8, int, int);
+void write4Bytes(u32);
+void writeByte(u8);
+void writeRegister(u8, u32);
+void setBit(u8, u32);
+void resetBit(u8, u32);
+bool isReady(void);
+bool Reset(void);
+u32  readWeightsclae();
 
 
- private:
- void enableChip(void);
- void disableChip(void);
+private:
+void enableChip(void);
+void disableChip(void);
 };
 
 #endif
