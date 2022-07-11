@@ -7,30 +7,14 @@
 
 
 void CS5530::spiInit(void) {
-    pinMode(AFECS,OUTPUT);
-    digitalWrite(AFECS, LOW);//enabled by default
+    pinMode(_ss,OUTPUT);
+    digitalWrite(_ss, LOW);//enabled by default
     SPI.begin ();//initialisation du bus SPI
     SPI.setBitOrder(MSBFIRST);      //MSB first
     SPI.setDataMode(SPI_MODE0);      //mode 0
     SPI.setClockDivider(SPI_CLOCK_DIV8);   //divide the clock by 8 5MHz
     delay(1);
-    digitalWrite(AFECS, HIGH);//disable the chip
-}
-
-
-/*
-  Enable CS5530
-*/
-void CS5530::enableChip(void) {
-    digitalWrite(AFECS, LOW);
-}
-
-
-/*
-  Disable CS5530
-*/
-void CS5530::disableChip(void) {
-    digitalWrite(AFECS, HIGH);
+    digitalWrite(_ss, HIGH);//disable the chip
 }
 
 
@@ -101,9 +85,9 @@ void CS5530::resetBit(u8 reg, u32 dat) {
 
 void CS5530::writeByte(u8 dat) {
  
-    enableChip();
+    digitalWrite(_ss, LOW);
     SPI.transfer(dat & 0xFF); 
-    disableChip();
+    digitalWrite(_ss, HIGH);
 }
 
 void CS5530::write4Bytes(u32 dat) {
@@ -143,9 +127,9 @@ u32 CS5530::read4Bytes(void)      {
 u8 CS5530::readByte(void)     {
     u8 dat=0;
 	  
-    enableChip();
+    digitalWrite(_ss, LOW);
     dat = SPI.transfer(CMD_NULL);
-    disableChip();
+    digitalWrite(_ss, HIGH);
 	  
     return dat;
 }

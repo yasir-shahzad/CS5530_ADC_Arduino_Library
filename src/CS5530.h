@@ -141,9 +141,8 @@ public:
 
 
 private:
+	SPISettings _spiSettings;
  int _ss;
- void enableChip(void);
- void disableChip(void);
 };
 
 #endif
