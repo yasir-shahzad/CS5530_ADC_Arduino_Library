@@ -6,13 +6,10 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
 
 ## Compatible Hardware
 
- * [cs5530](https://www.semtech.com/apps/product.php?pn=SX1276) based boards including:
-   * [Dragino Lora Shield](https://www.dragino.com/products/lora/item/102-lora-shield.html)
-   * [HopeRF](https://www.hoperf.com/modules/lora/index.html) [RFM95W](https://www.hoperf.com/modules/lora/RFM95.html), [RFM96W](https://www.hoperf.com/modules/lora/RFM96.html), and [RFM98W](https://www.hoperf.com/modules/lora/RFM98.html)
-   * [Modtronix](http://modtronix.com/) [inAir4](http://modtronix.com/inair4.html), [inAir9](http://modtronix.com/inair9.html), and [inAir9B](http://modtronix.com/inair9b.html)
- * [Arduino MKR WAN 1300](https://store.arduino.cc/usa/mkr-wan-1300)
-   * **NOTE:** Requires firmware v1.1.6 or later on the on-board Murata module. Please use the [MKRWANFWUpdate_standalone example](https://github.com/arduino-libraries/MKRWAN/blob/master/examples/MKRWANFWUpdate_standalone/MKRWANFWUpdate_standalone.ino) from latest [MKRWAN library](https://github.com/arduino-libraries/MKRWAN) release to update the firmware.
-   * **WARNING**: [LoRa.onReceive(...)](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#register-callback) and [LoRa.recieve()](https://github.com/sandeepmistry/arduino-LoRa/blob/master/API.md#receive-mode) is not compatible with this board!
+ * [CS5530](https://www.cirrus.com/products/cs5530/) based boards including:
+   * [CS5530 Shield v1.0](https://www.aliexpress.com/item/1005002054335619.html)
+   * [CS5530 Sheild v2.0](https://www.aliexpress.com/item/1005002394037116.html) 
+  
 
 ### Cirrus logic CS5530 wiring
 
@@ -58,31 +55,22 @@ See [examples](examples) folder.
 
 ## FAQ
 
-**1) Initilizating the CS5530 is failing**
+**1) Initializing the CS5530 is failing**
 
-Please check the wiring you are using matches what's listed in [Cirrus logic CS5530](# Cirrus logic CS5530-wiring). You can also use `LoRa.setPins(ss, reset, dio0)` to change the default pins used. Some logic level converters cannot operate at 8 MHz, you can call `LoRa.setSPIFrequency(frequency)` to lower the SPI frequency used by the library. Both API's must be called before `LoRa.begin(...)`.
+Please check the wiring you are using matches what's listed in [Cirrus logic CS5530](# Cirrus logic CS5530-wiring). You can also use `cell.setPins(ss)` to change the default pins used. You can call `cell.setSPIFrequency(frequency)` to lower the SPI frequency used by the library. Both API's must be called before `cell.begin(...)`.
 
 **2) Is CS5530 MSBFIRST or LSBFIRST?**
 
-If we see in the datasheet we can clearly see the CS5530 is MSBFIRST.
+If we see in the data sheet we can clearly see the CS5530 is MSBFIRST.
 
-**3) Is the data I'm sending encrypted?**
+**3) Which SPI mode does CS5530 uses?**
 
-No, all data is sent unencrypted. If want your packet data to be encrypted, you must encrypt it before passing it into this library, followed by decrypting on the receiving end.
+if we see at Cpoles and Cphases in data-sheet, we can clearly analize from graphs that it's SPI_MODE0.
 
-**4) How does this library differ from LoRaWAN libraries?**
+**4) Does it SPI works on fixed frequency?**
 
-This library exposes the LoRa radio directly, and allows you to send data to any radios in range with same radio parameters. All data is broadcasted and there is no addressing. LoRaWAN builds on top of LoRA, but adds addressing, encryption, and additional layers. It also requires a LoRaWAN gateway and LoRaWAN network and application server.
+No, It's SPI work on different frequency ranges.
 
-**5) Does this library honor duty cycles?**
-
-No, you have to manage it by your self.
-
-**6) Which frequencies can I use?**
-
-You can use [this table](https://www.thethingsnetwork.org/wiki/LoRaWAN/Frequencies/By-Country) to lookup the available frequencies by your country. The selectable frequency also depends on your hardware. You can lookup the data sheet or ask your supplier.
-
-Please also notice the frequency dependent duty cycles for legal reasons!
 
 ## License
 
