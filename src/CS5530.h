@@ -133,8 +133,6 @@ enum EAdStatus {
    E_AD_STATUS_OVERFLOW
 };
 
-
-
 class CS5530 {
 public:
 	
@@ -144,13 +142,13 @@ public:
  void setSPI(SPIClass& spi);
  void setSPIFrequency(u32);
  u32 twoComplement(u32);
- u8 readByte(void);
- u32 read4Bytes(void);
+ u8 readChar(void);
+ u32 readLong(void);
  u32 readRegister(u8);
  u8 convert(u8, u8, u8, int);
  u8 calibrate(u8, int, int);
- void write4Bytes(u32);
- void writeByte(u8);
+ void writeLong(u32);
+ void writeChar(u8);
  void writeRegister(u8, u32);
  void setBit(u8, u32);
  void resetBit(u8, u32);

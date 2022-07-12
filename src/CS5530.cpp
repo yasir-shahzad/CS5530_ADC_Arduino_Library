@@ -6,8 +6,6 @@
 #include <stdio.h>
 
 
-
-
 CS5530::CS5530():
 _spiSettings(5530_DEFAULT_SPI_FREQUENCY, MSBFIRST, SPI_MODE0),
 _spi(&5530_DEFAULT_SPI), _ss(5530_DEFAULT_SS_PIN)
@@ -55,10 +53,10 @@ bool CS5530::reset(void) {
 	
     //Initilizing SPI port
     for(i=0;i<15;i++) {
-      writeByte(CMD_SYNC1);
+      writeChar(CMD_SYNC1);
     }
 	
-    writeByte(CMD_SYNC0);
+    writeChar(CMD_SYNC0);
 	
     // Reseting CS5530
     writeRegister(CMD_CONFIG_WRITE,  REG_CONFIG_RS);    	
@@ -77,8 +75,8 @@ bool CS5530::reset(void) {
 
 void CS5530::writeRegister(u8 reg, u32 dat) {
  
-    writeByte(reg);
-    write4Bytes(dat);
+    writeChar(reg);
+    writeLong(dat);
 }
 
 void CS5530::setBit(u8 reg, u32 dat) {
@@ -93,8 +91,8 @@ void CS5530::setBit(u8 reg, u32 dat) {
 
     tmp =  readRegister(cmd);
     tmp |= dat;
-    writeByte(reg);
-    write4Bytes(tmp);
+    writeChar(reg);
+    writeLong(tmp);
 }
 
 void CS5530::resetBit(u8 reg, u32 dat) {
@@ -109,12 +107,12 @@ void CS5530::resetBit(u8 reg, u32 dat) {
 
     tmp =  readRegister(cmd);
     tmp &= ~dat;
-    writeByte(reg);
-    write4Bytes(tmp);
+    writeChar(reg);
+    writeLong(tmp);
 }
 
 
-void CS5530::writeByte(u8 dat) {
+void CS5530::writeChar(u8 dat) {
  
     digitalWrite(_ss, LOW);
 	_spi->beginTransaction(_spiSettings);
@@ -123,13 +121,13 @@ void CS5530::writeByte(u8 dat) {
     digitalWrite(_ss, HIGH);
 }
 
-void CS5530::write4Bytes(u32 dat) {
+void CS5530::writeLong(u32 dat) {
     int i;
     u8 tmp;
 
     for(i=3; i>=0; i--) {
         tmp = (u8)( (dat >> (8*i)) & 0xff);
-        writeByte(tmp);
+        writeChar(tmp);
     }
 }
  
@@ -137,27 +135,27 @@ void CS5530::write4Bytes(u32 dat) {
 u32 CS5530::readRegister(u8 reg) {
     u32 dat;
 	
-    writeByte(reg);
-    dat = read4Bytes();
+    writeChar(reg);
+    dat = readLong();
 	
     return dat;
 }
 
 
-u32 CS5530::read4Bytes(void)      {
+u32 CS5530::readLong(void)      {
     int i;
     u32 dat=0; 
     u8 currntByte = 0;
    
     for(i=0; i<4; i++) {
         dat    <<=    8;
-        dat    |= readByte();
+        dat    |= readChar();
     }
 
     return dat;
 }
 
-u8 CS5530::readByte(void)     {
+u8 CS5530::readChar(void)     {
     u8 dat=0;
 	  
     digitalWrite(_ss, LOW);
@@ -224,7 +222,7 @@ u8 CS5530::calibrate(u8 calibrate_type, int cfg_reg, int setup_reg) {
 	u8 cmd,read_reg;
 
 	writeRegister(CMD_CONFIG_WRITE, cfg_reg);
-	writeByte(cmd);
+	writeChar(cmd);
 
 	for(waste_time = WASTE_TIME; waste_time > 0; waste_time--)
 		;
@@ -267,13 +265,13 @@ u8 CS5530::convert(u8 convert_type, u8 setup_reg_no, u8 reg_no, int word_rate) {
 
 	writeRegister(CMD_CONFIG_WRITE, cfg_reg);
     delay(10);
-	//writeByte(cmd);
+	//writeChar(cmd);
 	Serial.print("Conversion begins...\n");
 
 	delay(10);
 	u8 test = 0;
-//	test = readByte();   // wastercycles
-	//final_result = read4Bytes();
+//	test = readChar();   // wastercycles
+	//final_result = readLong();
 
 
 	Serial.print("The raw result is:"); Serial.println(final_result,BIN);
