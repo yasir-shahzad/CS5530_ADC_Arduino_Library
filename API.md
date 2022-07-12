@@ -1,9 +1,9 @@
-# LoRa API
+# CS5530 API
 
 ## Include Library
 
 ```arduino
-#include <LoRa.h>
+#include <CS5530.h>
 ```
 
 ## Setup
@@ -13,7 +13,7 @@
 Initialize the library with the specified frequency.
 
 ```arduino
-LoRa.begin(frequency);
+cell.begin();
 ```
  * `frequency` - frequency in Hz (`433E6`, `868E6`, `915E6`)
 
@@ -21,10 +21,10 @@ Returns `1` on success, `0` on failure.
 
 ### Set pins
 
-Override the default `NSS`, `NRESET`, and `DIO0` pins used by the library. **Must** be called before `LoRa.begin()`.
+Override the default `NSS` pin used by the library. **Must** be called before `cell.begin()`.
 
 ```arduino
-LoRa.setPins(ss, reset, dio0);
+cell.setPin(ss);
 ```
  * `ss` - new slave select pin to use, defaults to `10`
  * `reset` - new reset pin to use, defaults to `9`
@@ -44,10 +44,10 @@ The dio0 pin can be used for transmission finish callback and/or receiving callb
 
 ### Set SPI interface
 
-Override the default SPI interface used by the library. **Must** be called before `LoRa.begin()`.
+Override the default SPI interface used by the library. **Must** be called before `cell.begin()`.
 
 ```arduino
-LoRa.setSPI(spi);
+cell.setSPI(spi);
 ```
  * `spi` - new SPI interface to use, defaults to `SPI`
 
@@ -55,21 +55,21 @@ This call is optional and only needs to be used if you need to change the defaul
 
 ### Set SPI Frequency
 
-Override the default SPI frequency of 10 MHz used by the library. **Must** be called before `LoRa.begin()`.
+Override the default SPI frequency of 10 MHz used by the library. **Must** be called before `cell.begin()`.
 
 ```arduino
-LoRa.setSPIFrequency(frequency);
+cell.setSPIFrequency(frequency);
 ```
  * `frequency` - new SPI frequency to use, defaults to `8E6`
 
-This call is optional and only needs to be used if you need to change the default SPI frequency used. Some logic level converters cannot support high speeds such as 8 MHz, so a lower SPI frequency can be selected with `LoRa.setSPIFrequency(frequency)`.
+This call is optional and only needs to be used if you need to change the default SPI frequency used. Some logic level converters cannot support high speeds such as 8 MHz, so a lower SPI frequency can be selected with `cell.setSPIFrequency(frequency)`.
 
 ### End
 
 Stop the library
 
 ```arduino
-LoRa.end()
+cell.end()
 ```
 
 ## Sending data
@@ -79,9 +79,9 @@ LoRa.end()
 Start the sequence of sending a packet.
 
 ```arduino
-LoRa.beginPacket();
+cell.beginPacket();
 
-LoRa.beginPacket(implicitHeader);
+cell.beginPacket(implicitHeader);
 ```
 
  * `implicitHeader` - (optional) `true` enables implicit header mode, `false` enables explicit header mode (default)
@@ -93,9 +93,9 @@ Returns `1` if radio is ready to transmit, `0` if busy or on failure.
 Write data to the packet. Each packet can contain up to 255 bytes.
 
 ```arduino
-LoRa.write(byte);
+cell.write(byte);
 
-LoRa.write(buffer, length);
+cell.write(buffer, length);
 ```
 * `byte` - single byte to write to packet
 
@@ -113,9 +113,9 @@ Returns the number of bytes written.
 End the sequence of sending a packet.
 
 ```arduino
-LoRa.endPacket();
+cell.endPacket();
 
-LoRa.endPacket(async);
+cell.endPacket(async);
 ```
  * `async` - (optional) `true` enables non-blocking mode, `false` waits for transmission to be completed (default)
 
@@ -130,7 +130,7 @@ Returns `1` on success, `0` on failure.
 Register a callback function for when a packet transmission finish.
 
 ```arduino
-LoRa.onTxDone(onTxDone);
+cell.onTxDone(onTxDone);
 
 void onTxDone() {
  // ...
@@ -146,9 +146,9 @@ void onTxDone() {
 Check if a packet has been received.
 
 ```arduino
-int packetSize = LoRa.parsePacket();
+int packetSize = cell.parsePacket();
 
-int packetSize = LoRa.parsePacket(size);
+int packetSize = cell.parsePacket(size);
 ```
 
  * `size` - (optional) if `> 0` implicit header mode is enabled with the expected a packet of `size` bytes, default mode is explicit header mode
@@ -165,7 +165,7 @@ Returns the packet size in bytes or `0` if no packet was received.
 Register a callback function for when a packet is received.
 
 ```arduino
-LoRa.onReceive(onReceive);
+cell.onReceive(onReceive);
 
 void onReceive(int packetSize) {
  // ...
@@ -179,9 +179,9 @@ void onReceive(int packetSize) {
 Puts the radio in continuous receive mode.
 
 ```arduino
-LoRa.receive();
+cell.receive();
 
-LoRa.receive(int size);
+cell.receive(int size);
 ```
 
  * `size` - (optional) if `> 0` implicit header mode is enabled with the expected a packet of `size` bytes, default mode is explicit header mode
@@ -191,7 +191,7 @@ The `onReceive` callback will be called when a packet is received.
 ### Packet RSSI
 
 ```arduino
-int rssi = LoRa.packetRssi();
+int rssi = cell.packetRssi();
 ```
 
 Returns the averaged RSSI of the last received packet (dBm).
@@ -199,7 +199,7 @@ Returns the averaged RSSI of the last received packet (dBm).
 ### Packet SNR
 
 ```arduino
-float snr = LoRa.packetSnr();
+float snr = cell.packetSnr();
 ```
 
 Returns the estimated SNR of the received packet in dB.
@@ -207,7 +207,7 @@ Returns the estimated SNR of the received packet in dB.
 ## RSSI
 
 ```arduino
-int rssi = LoRa.rssi();
+int rssi = cell.rssi();
 ```
 
 Returns the current RSSI of the radio (dBm). RSSI can be read at any time (during packet reception or not)
@@ -215,15 +215,15 @@ Returns the current RSSI of the radio (dBm). RSSI can be read at any time (durin
 ### Packet Frequency Error
 
 ```arduino
-long freqErr = LoRa.packetFrequencyError();
+long freqErr = cell.packetFrequencyError();
 ```
 
-Returns the frequency error of the received packet in Hz. The frequency error is the frequency offset between the receiver centre frequency and that of an incoming LoRa signal.
+Returns the frequency error of the received packet in Hz. The frequency error is the frequency offset between the receiver centre frequency and that of an incoming cell signal.
 
 ### Available
 
 ```arduino
-int availableBytes = LoRa.available()
+int availableBytes = cell.available()
 ```
 
 Returns number of bytes available for reading.
@@ -233,7 +233,7 @@ Returns number of bytes available for reading.
 Peek at the next byte in the packet.
 
 ```arduino
-byte b = LoRa.peek();
+byte b = cell.peek();
 ```
 
 Returns the next byte in the packet or `-1` if no bytes are available.
@@ -243,7 +243,7 @@ Returns the next byte in the packet or `-1` if no bytes are available.
 Read the next byte from the packet.
 
 ```arduino
-byte b = LoRa.read();
+byte b = cell.read();
 ```
 
 Returns the next byte in the packet or `-1` if no bytes are available.
@@ -257,7 +257,7 @@ Returns the next byte in the packet or `-1` if no bytes are available.
 Put the radio in idle (standby) mode.
 
 ```arduino
-LoRa.idle();
+cell.idle();
 ```
 
 ### Sleep mode
@@ -265,7 +265,7 @@ LoRa.idle();
 Put the radio in sleep mode.
 
 ```arduino
-LoRa.sleep();
+cell.sleep();
 ```
 
 ## Radio parameters
@@ -275,9 +275,9 @@ LoRa.sleep();
 Change the TX power of the radio.
 
 ```arduino
-LoRa.setTxPower(txPower);
+cell.setTxPower(txPower);
 
-LoRa.setTxPower(txPower, outputPin);
+cell.setTxPower(txPower, outputPin);
 ```
  * `txPower` - TX power in dB, defaults to `17`
  * `outputPin` - (optional) PA output pin, supported values are `PA_OUTPUT_RFO_PIN` and `PA_OUTPUT_PA_BOOST_PIN`, defaults to `PA_OUTPUT_PA_BOOST_PIN`.
@@ -291,7 +291,7 @@ Most modules have the PA output pin connected to PA BOOST,
 Change the frequency of the radio.
 
 ```arduino
-LoRa.setFrequency(frequency);
+cell.setFrequency(frequency);
 ```
  * `frequency` - frequency in Hz (`433E6`, `868E6`, `915E6`)
 
@@ -300,7 +300,7 @@ LoRa.setFrequency(frequency);
 Change the spreading factor of the radio.
 
 ```arduino
-LoRa.setSpreadingFactor(spreadingFactor);
+cell.setSpreadingFactor(spreadingFactor);
 ```
  * `spreadingFactor` - spreading factor, defaults to `7`
 
@@ -311,7 +311,7 @@ Supported values are between `6` and `12`. If a spreading factor of `6` is set, 
 Change the signal bandwidth of the radio.
 
 ```arduino
-LoRa.setSignalBandwidth(signalBandwidth);
+cell.setSignalBandwidth(signalBandwidth);
 ```
 
  * `signalBandwidth` - signal bandwidth in Hz, defaults to `125E3`.
@@ -323,7 +323,7 @@ Supported values are `7.8E3`, `10.4E3`, `15.6E3`, `20.8E3`, `31.25E3`, `41.7E3`,
 Change the coding rate of the radio.
 
 ```arduino
-LoRa.setCodingRate4(codingRateDenominator);
+cell.setCodingRate4(codingRateDenominator);
 ```
 
  * `codingRateDenominator` - denominator of the coding rate, defaults to `5`
@@ -335,7 +335,7 @@ Supported values are between `5` and `8`, these correspond to coding rates of `4
 Change the preamble length of the radio.
 
 ```arduino
-LoRa.setPreambleLength(preambleLength);
+cell.setPreambleLength(preambleLength);
 ```
 
  * `preambleLength` - preamble length in symbols, defaults to `8`
@@ -347,7 +347,7 @@ Supported values are between `6` and `65535`.
 Change the sync word of the radio.
 
 ```arduino
-LoRa.setSyncWord(syncWord);
+cell.setSyncWord(syncWord);
 ```
 
  * `syncWord` - byte value to use as the sync word, defaults to `0x12`
@@ -357,26 +357,26 @@ LoRa.setSyncWord(syncWord);
 Enable or disable CRC usage, by default a CRC is not used.
 
 ```arduino
-LoRa.enableCrc();
+cell.enableCrc();
 
-LoRa.disableCrc();
+cell.disableCrc();
 ```
 
 ### Invert IQ Signals
 
-Enable or disable Invert the LoRa I and Q signals, by default a invertIQ is not used.
+Enable or disable Invert the cell I and Q signals, by default a invertIQ is not used.
 
 ```arduino
-LoRa.enableInvertIQ();
+cell.enableInvertIQ();
 
-LoRa.disableInvertIQ();
+cell.disableInvertIQ();
 ```
 ### LNA Gain
 
 Set LNA Gain for better RX sensitivity, by default AGC (Automatic Gain Control) is used and LNA gain is not used.
 
 ```arduino
-LoRa.setGain(gain);
+cell.setGain(gain);
 ```
 
  * `gain` - LNA gain
@@ -390,7 +390,7 @@ Supported values are between `0` and `6`. If gain is 0, AGC will be enabled and 
 Generate a random byte, based on the Wideband RSSI measurement.
 
 ```
-byte b = LoRa.random();
+byte b = cell.random();
 ```
 
 Returns random byte.
