@@ -23,7 +23,7 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
 | NSS | 10 |
 
 
-`NSS` pin can be changed by using `cell.setPins(ss, reset, dio0)`. `DIO0` pin is optional, it is only needed for receive callback mode. If `DIO0` pin is used, it **must** be interrupt capable via [`attachInterrupt(...)`](https://www.arduino.cc/en/Reference/AttachInterrupt).
+`NSS` pin can be changed by using `cell.setPin(ss)`. 
 
 **NOTES**:
  * Some boards (like the Arduino Nano), cannot supply enough current for the CS5530 in TX mode. This will cause lockups when sending, be sure to use an external 3.3V supply that can provide at least 120mA's when using these boards.
@@ -71,6 +71,9 @@ if we see at Cpoles and Cphases in data-sheet, we can clearly analize from graph
 
 No, It's SPI work on different frequency ranges.
 
+**5) Can this library be used for CS5532 or CS5534?**
+
+Yes, It's SPI communication works on all the cirrus logic chips. But you have to change register configurations. 
 
 ## License
 
