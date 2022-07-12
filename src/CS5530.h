@@ -103,7 +103,11 @@
 #define REG_DATA_OF         1UL << 3
 
 #define CMD_STOP_CONT_CONV  0xFF
-#define LORA_DEFAULT_SS_PIN   10
+
+#define LORA_DEFAULT_SPI           SPI
+#define LORA_DEFAULT_SPI_FREQUENCY 8E6 
+#define LORA_DEFAULT_SS_PIN        10
+
 
 
 //Command Register (CS5530_COMM_REG)
@@ -133,8 +137,9 @@ enum EAdStatus {
 
 class CS5530 {
 public:
-
- void spiInit(int);
+	
+ CS5530();
+ void spiInit();
  int begin();
  void setPins(int ss = LORA_DEFAULT_SS_PIN);
  void setSPI(SPIClass& spi);

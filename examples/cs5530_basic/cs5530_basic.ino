@@ -35,13 +35,13 @@ i32 value;
 
 void setup() {
     Serial.begin(115200);
-	cell.begin();
+	//cell.begin();
  
-   // cell.spiInit(1);   //SPI settings for CS5530
+    cell.spiInit();   //SPI settings for CS5530
     if (cell.reset())
-    	Serial.println("Starting CS5530 failed");
+    	Serial.println("CS5530 Initialized Successfully");
     else
-    	Serial.println("CS5530 not working");
+    	Serial.println("Starting CS5530 failed");
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
@@ -79,7 +79,7 @@ void loop() {
 			//Serial.print(recData); Serial.println(" data");
         //  Serial.print((value - 34250)/105);
 
-		  Serial.print(((value - 111683  )/18) + " grms" );
+		//  Serial.print(((value - 111683  )/18) + " grms" );
 		  startTime = millis()+200;
 		}
 		

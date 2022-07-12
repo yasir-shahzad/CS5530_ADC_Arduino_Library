@@ -3,11 +3,28 @@
 #include <SPI.h>
 #include "CS5530.h"
 #include "Arduino.h"
+#include <stdio.h>
 
 
 
-void CS5530::spiInit(int ss) {
-    _ss = ss;
+
+CS5530::CS5530():
+_ss(LORA_DEFAULT_SS_PIN)
+
+{
+
+
+//_spi->begin();
+//_spiSettings(LORA_DEFAULT_SPI_FREQUENCY, MSBFIRST, SPI_MODE0),
+
+//	_spi(&LORA_DEFAULT_SPI), 
+
+
+}
+
+
+void CS5530::spiInit() {
+    _ss = 10;
     pinMode(_ss,OUTPUT);
     digitalWrite(_ss, LOW);//enabled by default
     SPI.begin ();//initialisation du bus SPI
@@ -24,10 +41,10 @@ int CS5530::begin()
   pinMode(_ss, OUTPUT);
 
    digitalWrite(_ss, LOW);
-
+   
    _spi->begin();
+   SPI.begin ();
   // set SS high
-  setSPIFrequency(6000000);
   digitalWrite(_ss, HIGH);
 
   // start SPI
@@ -69,8 +86,11 @@ bool CS5530::reset(void) {
     writeRegister(CMD_CONFIG_WRITE, CMD_NULL); 
 	
     tmp = readRegister(CMD_CONFIG_READ);	
-
+    Serial.println(tmp, BIN);
+	Serial.println(REG_CONFIG_RV, BIN);
     if(tmp & REG_CONFIG_RV) {
+     Serial.println("in true");
+
      return true;
     }
 
@@ -120,9 +140,9 @@ void CS5530::resetBit(u8 reg, u32 dat) {
 void CS5530::writeByte(u8 dat) {
  
     digitalWrite(_ss, LOW);
-	_spi->beginTransaction(_spiSettings);
+	//_spi->beginTransaction(_spiSettings);
     SPI.transfer(dat & 0xFF); 
-	_spi->endTransaction();
+	//_spi->endTransaction();
     digitalWrite(_ss, HIGH);
 }
 
@@ -164,9 +184,9 @@ u8 CS5530::readByte(void)     {
     u8 dat=0;
 	  
     digitalWrite(_ss, LOW);
-	_spi->beginTransaction(_spiSettings);
+	//_spi->beginTransaction(_spiSettings);
     dat = SPI.transfer(CMD_NULL);
-	_spi->endTransaction();
+	///_spi->endTransaction();
     digitalWrite(_ss, HIGH);
 	  
     return dat;
