@@ -31,17 +31,13 @@ CS5530 cell;
 u32 startTime;
 i32 value;
 
-//VRS = 0;
-
 void setup() {
     Serial.begin(115200);
-	//cell.begin();
- 
-    cell.spiInit();   //SPI settings for CS5530
+
     if (cell.reset())
     	Serial.println("CS5530 Initialized Successfully");
     else
-    	Serial.println("Starting CS5530 failed");
+        Serial.println("Starting CS5530 failed");
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
@@ -51,15 +47,15 @@ void setup() {
 
     //u32 tmpdata = REG_CONFIG_UNIPOLAR | REG
 
-	cell.writeRegister(CMD_CONFIG_WRITE, CS5530_UNIPOLAR);
+    cell.writeRegister(CMD_CONFIG_WRITE, CS5530_UNIPOLAR);
 
   
     //cell.Convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS );
 
-	u32 cmpl = cell.twoComplement(0xFFFFFFFF);
+     u32 cmpl = cell.twoComplement(0xFFFFFFFF);
 
-	
-	 cell.writeByte(CMD_CONVERSION_CONTINU);
+
+     cell.writeByte(CMD_CONVERSION_CONTINU);
      cell.writeRegister(CMD_OFFSET_WRITE, cmpl);
 	
 
@@ -67,22 +63,20 @@ void setup() {
 
 
 void loop() {    
-		i32 recData = cell.readWeightsclae();
-		
-		if(recData > 0) {
-			
-			value = 0.97 * value + 0.03 * recData;	// running average		
-		    delay(5); 
-	    }
-		
-        if(millis() > startTime){
-			//Serial.print(recData); Serial.println(" data");
-        //  Serial.print((value - 34250)/105);
+        i32 recData = cell.readWeightsclae();
 
-		//  Serial.print(((value - 111683  )/18) + " grms" );
-		  startTime = millis()+200;
-		}
-		
+        if(recData > 0) {
+
+         value = 0.97 * value + 0.03 * recData;	// running average		
+         delay(5); 
+         }
+
+        if(millis() > startTime){
+          Serial.println (String((value-111683)/18) + " grms");
+
+          startTime = millis()+200;
+         }
+
     }
 
 

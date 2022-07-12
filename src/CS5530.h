@@ -42,7 +42,7 @@
  
 #define NOTHING 0
 
-#define CS5532_READ_DATA_TIMEOUT 2000000
+#define CS5530_READ_DATA_TIMEOUT 2000000
 
 #define TIMEOUTERR         0xff
  
@@ -104,9 +104,9 @@
 
 #define CMD_STOP_CONT_CONV  0xFF
 
-#define LORA_DEFAULT_SPI           SPI
-#define LORA_DEFAULT_SPI_FREQUENCY 8E6 
-#define LORA_DEFAULT_SS_PIN        10
+#define 5530_DEFAULT_SPI           SPI
+#define 5530_DEFAULT_SPI_FREQUENCY 8E6 
+#define 5530_DEFAULT_SS_PIN        10
 
 
 
@@ -139,9 +139,8 @@ class CS5530 {
 public:
 	
  CS5530();
- void spiInit();
  int begin();
- void setPins(int ss = LORA_DEFAULT_SS_PIN);
+ void setPin(int ss = 5530_DEFAULT_SS_PIN);
  void setSPI(SPIClass& spi);
  void setSPIFrequency(u32);
  u32 twoComplement(u32);
