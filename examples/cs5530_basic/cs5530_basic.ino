@@ -50,7 +50,7 @@ void setup() {
 
     //u32 tmpdata = REG_CONFIG_UNIPOLAR | REG
 
-	cell.writeRegister(CMD_CONFIG_WRITE, REG_CONFIG_UNIPOLAR);
+	cell.writeRegister(CMD_CONFIG_WRITE, CS5530_UNIPOLAR);
 
   
     //cell.Convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS );

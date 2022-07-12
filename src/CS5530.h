@@ -109,9 +109,9 @@
 #define CMD_CONVERSION_CONTINU  0xC0
 #define CMD_SYS_OFFSET_CALI     0x85
 #define CMD_SYS_GAIN_CALI       0x86
-#define CMD_SYNC1               0xFF    //Part of the serial port re-initialization sequence.
-#define CMD_SYNC0               0xFE    //End of the serial port re-initialization sequence.
-#define CMD_NULL                0x00    //This command is used to clear a port flag and keep the converter in the continuous conversion mode.
+#define CMD_SYNC1               0xFF          //Part of the serial port re-initialization sequence.
+#define CMD_SYNC0               0xFE          //End of the serial port re-initialization sequence.
+#define CMD_NULL                0x00          //This command is used to clear a port flag and keep the converter in the continuous conversion mode.
 
 
 enum EAdStatus {
