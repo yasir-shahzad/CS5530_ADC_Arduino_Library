@@ -18,15 +18,20 @@ void CS5530::spiInit(int ss) {
     digitalWrite(_ss, HIGH);//disable the chip
 }
 
-int CS5530::begin(long frequency)
+int CS5530::begin()
 {
   // setup pins
   pinMode(_ss, OUTPUT);
+
+   digitalWrite(_ss, LOW);
+
+   _spi->begin();
   // set SS high
+  setSPIFrequency(6000000);
   digitalWrite(_ss, HIGH);
 
   // start SPI
-  _spi->begin();
+ 
 
   return 1;
 }

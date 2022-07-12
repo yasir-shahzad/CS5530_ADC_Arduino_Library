@@ -1,9 +1,18 @@
+/*
+ * Copyright (c) 2022 by Yasir Shahzad <Yasirshahzad918@gmail.com>
+ *
+ * This file is free software; you can redistribute it and/or modify
+ * it under the terms of either the GNU General Public License version 2
+ * or the GNU Lesser General Public License version 2.1, both as
+ * published by the Free Software Foundation.
+ */
+
+
 #ifndef CS5530_H
 #define CS5530_H
 
 
 //Alias of Basic Types
-
 #define i32 long int
 #define i16 int
 #define i8  char
@@ -126,6 +135,7 @@ class CS5530 {
 public:
 
  void spiInit(int);
+ int begin();
  void setPins(int ss = LORA_DEFAULT_SS_PIN);
  void setSPI(SPIClass& spi);
  void setSPIFrequency(u32);
