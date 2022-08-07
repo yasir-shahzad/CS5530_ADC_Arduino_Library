@@ -104,9 +104,9 @@
 
 #define CMD_STOP_CONT_CONV  0xFF
 
-#define 5530_DEFAULT_SPI           SPI
-#define 5530_DEFAULT_SPI_FREQUENCY 8E6 
-#define 5530_DEFAULT_SS_PIN        10
+#define CS5530_DEFAULT_SPI           SPI
+#define CS5530_DEFAULT_SPI_FREQUENCY 8E6 
+#define CS5530_DEFAULT_SS_PIN        10
 
 
 
@@ -138,7 +138,7 @@ public:
 	
  CS5530();
  int begin();
- void setPin(int ss = 5530_DEFAULT_SS_PIN);
+ void setPin(int ss = CS5530_DEFAULT_SS_PIN);
  void setSPI(SPIClass& spi);
  void setSPIFrequency(u32);
  u32 twoComplement(u32);
