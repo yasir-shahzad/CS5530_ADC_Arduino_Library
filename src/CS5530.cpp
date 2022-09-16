@@ -5,7 +5,7 @@
 #include "Arduino.h"
 #include <stdio.h>
 
-
+//Constructor
 CS5530::CS5530():
 _spiSettings(5530_DEFAULT_SPI_FREQUENCY, MSBFIRST, SPI_MODE0),
 _spi(&5530_DEFAULT_SPI), _ss(5530_DEFAULT_SS_PIN)
