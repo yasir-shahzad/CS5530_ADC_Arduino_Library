@@ -54,7 +54,7 @@ void setup() {
     u32 cmpl = cell.twoComplement(0xFFFFFFFF);
 
 
-    cell.writeChar(CMD_CONVERSION_CONTINU);
+    cell.write8(CMD_CONVERSION_CONTINU);
     cell.writeRegister(CMD_OFFSET_WRITE, cmpl);
 	
 
@@ -64,16 +64,15 @@ void setup() {
 void loop() {
     i32 recData = cell.readWeightsclae();
 
-    if(recData > 0) {
-     value = 0.97 * value + 0.03 * recData;	// running average		
-     delay(5); 
+    if (recData > 0) {
+        value = 0.97 * value + 0.03 * recData; // running average
+        delay(5);
     }
 
-    if(millis() > startTime){
-      Serial.println (String((value-111683)/18) + " grms");
-      startTime = millis()+200;
+    if (millis() > startTime) {
+        Serial.println(String((value - 111683) / 18) + " grms");
+        startTime = millis() + 200;
     }
-
  }
 
 
