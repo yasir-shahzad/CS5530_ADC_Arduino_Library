@@ -99,9 +99,9 @@
 
 #define CMD_STOP_CONT_CONV  0xFF
 
-#define 5530_DEFAULT_SPI           SPI
-#define 5530_DEFAULT_SPI_FREQUENCY 8E6 
-#define 5530_DEFAULT_SS_PIN        10
+#define CS5530_DEFAULT_SPI           SPI
+#define CS5530_DEFAULT_SPI_FREQUENCY 8E6 
+#define CS5530_DEFAULT_SS_PIN        10
 
 
 
