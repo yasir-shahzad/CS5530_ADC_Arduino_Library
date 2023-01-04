@@ -13,12 +13,9 @@ _spi(&CS5530_DEFAULT_SPI), _ss(CS5530_DEFAULT_SS_PIN)
 }
 
 int CS5530::begin() {
-    // setup pins
     pinMode(_ss, OUTPUT);
-    digitalWrite(_ss, LOW);
-    // set SS high
-    digitalWrite(_ss, HIGH);
-    // start SPI
+    digitalWrite(_ss, LOW);  // set SS high
+    digitalWrite(_ss, HIGH);  // start SPI
     _spi->begin();
 
     return 1;
