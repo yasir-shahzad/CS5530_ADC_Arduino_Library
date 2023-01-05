@@ -29,13 +29,13 @@ void CS5530::setSPI(SPIClass &spi) {
     _spi = &spi;
 }
 
-void CS5530::setSPIFrequency(u32 frequency) {
+void CS5530::setSPIFrequency(uint32_t frequency) {
     _spiSettings = SPISettings(frequency, MSBFIRST, SPI_MODE0);
 }
 
 bool CS5530::reset(void) {
     int i;
-    u32 tmp;
+    uint32_t tmp;
 
     // Initilizing SPI port
     for (i = 0; i < 15; i++) {
@@ -58,15 +58,15 @@ bool CS5530::reset(void) {
     return false;
 }
 
-void CS5530::writeRegister(u8 reg, u32 dat) {
+void CS5530::writeRegister(uint8_t reg, uint32_t dat) {
 
     write8(reg);
     write32(dat);
 }
 
-void CS5530::setBit(u8 reg, u32 dat) {
-    u32 tmp = 0;
-    u8 cmd = 0;
+void CS5530::setBit(uint8_t reg, uint32_t dat) {
+    uint32_t tmp = 0;
+    uint8_t cmd = 0;
     switch (reg) {
         case CMD_GAIN_WRITE:
             cmd = CMD_GAIN_READ;
@@ -85,9 +85,9 @@ void CS5530::setBit(u8 reg, u32 dat) {
     write32(tmp);
 }
 
-void CS5530::resetBit(u8 reg, u32 dat) {
-    u32 tmp = 0;
-    u8 cmd = 0;
+void CS5530::resetBit(uint8_t reg, uint32_t dat) {
+    uint32_t tmp = 0;
+    uint8_t cmd = 0;
     switch (reg) {
         case CMD_GAIN_WRITE:
             cmd = CMD_GAIN_READ;
@@ -106,36 +106,36 @@ void CS5530::resetBit(u8 reg, u32 dat) {
     write32(tmp);
 }
 
-void CS5530::write8(u8 dat) {
+void CS5530::write8(uint8_t data) {
 
     digitalWrite(_ss, LOW);
     _spi->beginTransaction(_spiSettings);
-    SPI.transfer(dat & 0xFF);
+    SPI.transfer(data & 0xFF);
     _spi->endTransaction();
     digitalWrite(_ss, HIGH);
 }
 
-void CS5530::write32(u32 dat) {
+void CS5530::write32(uint32_t data) {
     int i;
-    u8 tmp;
+    uint8_t tmp;
 
     for (i = 3; i >= 0; i--) {
-        tmp = (u8)((dat >> (8 * i)) & 0xff);
+        tmp = (uint8_t)((data >> (8 * i)) & 0xff);
         write8(tmp);
     }
 }
 
-u32 CS5530::readRegister(u8 reg) {
-    u32 dat;
+uint32_t CS5530::readRegister(uint8_t reg) {
+    uint32_t data;
     write8(reg);
-    dat = read32();
-    return dat;
+    data = read32();
+    return data;
 }
 
-u32 CS5530::read32(void) {
+uint32_t CS5530::read32(void) {
     int i;
-    u32 dat = 0;
-    u8 currntByte = 0;
+    uint32_t dat = 0;
+    uint8_t currntByte = 0;
 
     for (i = 0; i < 4; i++) {
         dat <<= 8;
@@ -145,8 +145,8 @@ u32 CS5530::read32(void) {
     return dat;
 }
 
-u8 CS5530::read8(void) {
-    u8 dat = 0;
+uint8_t CS5530::read8(void) {
+    uint8_t dat = 0;
 
     digitalWrite(_ss, LOW);
     _spi->beginTransaction(_spiSettings);
@@ -165,8 +165,8 @@ bool CS5530::isReady(void) {
     return false;
 }
 
-u32 CS5530::readWeightsclae() {
-    u32 rec_data = 0;
+uint32_t CS5530::readWeightsclae() {
+    uint32_t rec_data = 0;
     EAdStatus status;
 
     if (isReady() == false) {
@@ -190,11 +190,11 @@ u32 CS5530::readWeightsclae() {
     // return status;
 }
 
-u8 CS5530::calibrate(u8 calibrate_type, int cfg_reg, int setup_reg) {
-    u32 calibrate_result;
+uint8_t CS5530::calibrate(uint8_t calibrate_type, int cfg_reg, int setup_reg) {
+    uint32_t calibrate_result;
     int waste_time, i;
     cfg_reg = (int)((calibrate_type % 2 == 1) ? (cfg_reg | REG_CONFIG_IS) : (cfg_reg));
-    u8 cmd, read_reg;
+    uint8_t cmd, read_reg;
 
     writeRegister(CMD_CONFIG_WRITE, cfg_reg);
     write8(cmd);
@@ -211,9 +211,9 @@ u8 CS5530::calibrate(u8 calibrate_type, int cfg_reg, int setup_reg) {
     return 1;
 }
 
-u32 CS5530::twoComplement(u32 n) {
-    u32 negative = (n & (1UL << 23)) != 0;
-    u32 native_int;
+uint32_t CS5530::twoComplement(uint32_t n) {
+    uint32_t negative = (n & (1UL << 23)) != 0;
+    uint32_t native_int;
 
     if (negative)
         native_int = n | ~((1UL << 24) - 1);
@@ -222,13 +222,13 @@ u32 CS5530::twoComplement(u32 n) {
     return native_int;
 }
 
-u8 CS5530::convert(u8 convert_type, u8 setup_reg_no, u8 reg_no, int word_rate) {
+uint8_t CS5530::convert(uint8_t convert_type, uint8_t setup_reg_no, uint8_t reg_no, int word_rate) {
     Serial.print("Prepare for conversion.\n");
-    u32 final_result = 0;
+    uint32_t final_result = 0;
     int waste_time, i;
-    u32 cfg_reg = (u32)REG_CONFIG_VRS;
+    uint32_t cfg_reg = (uint32_t)REG_CONFIG_VRS;
     int setup_reg = ((setup_reg_no % 2 == 1) ? ((word_rate) << 16) : word_rate);
-    u8 cmd;
+    uint8_t cmd;
 
     switch (convert_type) {
         case SINGLE_CONVERSION:
@@ -245,7 +245,7 @@ u8 CS5530::convert(u8 convert_type, u8 setup_reg_no, u8 reg_no, int word_rate) {
     Serial.print("Conversion begins...\n");
 
     delay(10);
-    u8 test = 0;
+    uint8_t test = 0;
     //	test = read8();   // wastercycles
     // final_result = read32();
 

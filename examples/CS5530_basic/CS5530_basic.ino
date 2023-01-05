@@ -27,8 +27,8 @@ https://github.com/yasir-shahzad/CS5530
 
 CS5530 cell;
 
-u32 startTime;
-i32 value;
+uint32_t startTime;
+long int value;
 
 void setup() {
     Serial.begin(115200);
@@ -40,18 +40,18 @@ void setup() {
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
-    u32 tmp = cell.readRegister(CMD_CONFIG_READ);
+    uint32_t tmp = cell.readRegister(CMD_CONFIG_READ);
     Serial.print("CONFIG Register:");
     Serial.println(tmp, BIN);
 
-    //u32 tmpdata = REG_CONFIG_UNIPOLAR | REG
+    //uint32_t tmpdata = REG_CONFIG_UNIPOLAR | REG
 
     cell.writeRegister(CMD_CONFIG_WRITE, CS5530_UNIPOLAR);
 
   
     //cell.Convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS );
 
-    u32 cmpl = cell.twoComplement(0xFFFFFFFF);
+    uint32_t cmpl = cell.twoComplement(0xFFFFFFFF);
 
 
     cell.write8(CMD_CONVERSION_CONTINU);
@@ -62,7 +62,7 @@ void setup() {
 
 
 void loop() {
-    i32 recData = cell.readWeightsclae();
+    long int recData = cell.readWeightsclae();
 
     if (recData > 0) {
         value = 0.97 * value + 0.03 * recData; // running average

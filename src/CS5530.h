@@ -11,14 +11,6 @@
 #ifndef CS5530_H
 #define CS5530_H
 
-//Alias of Basic Types
-#define i32 long int
-#define i16 int
-#define i8  char
-#define u32 unsigned long int
-#define u16 unsigned int
-#define u8  unsigned char
-
 #define RESET_TIME 1200000
 #define WASTE_TIME 90000000
 
@@ -133,21 +125,21 @@ public:
    int begin();
    void setPin(int ss = 5530_DEFAULT_SS_PIN);
    void setSPI(SPIClass &spi);
-   void setSPIFrequency(u32);
-   u32 twoComplement(u32);
-   u8 read8(void);
-   u32 read32(void);
-   u32 readRegister(u8);
-   u8 convert(u8, u8, u8, int);
-   u8 calibrate(u8, int, int);
-   void write32(u32);
-   void write8(u8);
-   void writeRegister(u8, u32);
-   void setBit(u8, u32);
-   void resetBit(u8, u32);
+   void setSPIFrequency(uint32_t);
+   uint32_t twoComplement(uint32_t);
+   uint8_t read8(void);
+   uint32_t read32(void);
+   uint32_t readRegister(uint8_t);
+   uint8_t convert(uint8_t, uint8_t, uint8_t, int);
+   uint8_t calibrate(uint8_t, int, int);
+   void write32(uint32_t);
+   void write8(uint8_t);
+   void writeRegister(uint8_t, uint32_t);
+   void setBit(uint8_t, uint32_t);
+   void resetBit(uint8_t, uint32_t);
    bool isReady(void);
    bool reset(void);
-   u32 readWeightsclae();
+   uint32_t readWeightsclae();
 
 private:
    SPISettings _spiSettings;
