@@ -14,7 +14,7 @@ G               7 Gnd         Ground
 
 Dependencies:
 https://github.com/yasir-shahzad/CS5530
-1
+
 */
 
 
@@ -28,7 +28,7 @@ https://github.com/yasir-shahzad/CS5530
 CS5530 cell;
 
 uint32_t startTime;
-long int value;
+int32_t value;
 
 void setup() {
     Serial.begin(115200);
@@ -62,17 +62,18 @@ void setup() {
 
 
 void loop() {
-    long int recData = cell.readWeightsclae();
+    int32_t recData = cell.readWeightsclae();
 
-    if (recData > 0) {
-        value = 0.97 * value + 0.03 * recData; // running average
-        delay(5);
+    if(recData > 0) {
+     value = 0.97 * value + 0.03 * recData;	// running average		
+     delay(5); 
     }
 
-    if (millis() > startTime) {
-        Serial.println(String((value - 111683) / 18) + " grms");
-        startTime = millis() + 200;
+    if(millis() > startTime){
+      Serial.println (String((value-111683)/18) + " grms");
+      startTime = millis()+200;
     }
+
  }
 
 
