@@ -11,8 +11,12 @@
 #ifndef CS5530_H
 #define CS5530_H
 
+
+
+
 #define RESET_TIME 1200000
 #define WASTE_TIME 90000000
+
 
 #define SELF_OFFSET     1
 #define SELF_GAIN       2
@@ -21,6 +25,7 @@
 
 #define SINGLE_CONVERSION       1
 #define CONTINUED_CONVERSION    2
+
 
 //Alias of Basic Results
 #define PASS              0x0
@@ -33,7 +38,7 @@
 #define CS5530_READ_DATA_TIMEOUT 2000000
 
 #define TIMEOUTERR         0xff
-
+ 
 #define SUCCESSFUL         0x0
 
 #define CMD_STOP_CONT_CONV 0xff
@@ -41,6 +46,7 @@
 #define CAL_TIMEOUT_LIMIT  4000
 
 #define READ_CONV_RESULT   0x00
+
 
 #define DATA_VALID  0
  
@@ -113,6 +119,7 @@
 #define CMD_SYNC0               0xFE          //End of the serial port re-initialization sequence.
 #define CMD_NULL                0x00          //This command is used to clear a port flag and keep the converter in the continuous conversion mode.
 
+
 enum EAdStatus {
    E_AD_STATUS_BUSY,
    E_AD_STATUS_READY,
@@ -121,30 +128,36 @@ enum EAdStatus {
 
 class CS5530 {
 public:
-   CS5530();
-   int begin();
-   void setPin(int ss = 5530_DEFAULT_SS_PIN);
-   void setSPI(SPIClass &spi);
-   void setSPIFrequency(uint32_t);
-   uint32_t twoComplement(uint32_t);
-   uint8_t read8(void);
-   uint32_t read32(void);
-   uint32_t readRegister(uint8_t);
-   uint8_t convert(uint8_t, uint8_t, uint8_t, int);
-   uint8_t calibrate(uint8_t, int, int);
-   void write32(uint32_t);
-   void write8(uint8_t);
-   void writeRegister(uint8_t, uint32_t);
-   void setBit(uint8_t, uint32_t);
-   void resetBit(uint8_t, uint32_t);
-   bool isReady(void);
-   bool reset(void);
-   uint32_t readWeightsclae();
+	
+ CS5530();
+ int begin();
+ void setPin(int ss = CS5530_DEFAULT_SS_PIN);
+ void setSPI(SPIClass& spi);
+ void setSPIFrequency(uint32_t);
+ uint32_t twoComplement(uint32_t);
+ uint8_t read8(void);
+ uint32_t read32(void);
+ uint32_t readRegister(uint8_t);
+ uint8_t convert(uint8_t, uint8_t, uint8_t, int);
+ uint8_t calibrate(uint8_t, int, int);
+ void write32(uint32_t);
+ void write8(uint8_t);
+ void writeRegister(uint8_t, uint32_t);
+ void setBit(uint8_t, uint32_t);
+ void resetBit(uint8_t, uint32_t);
+ bool isReady(void);
+ bool reset(void);
+ uint32_t  readWeightsclae();
+
 
 private:
-   SPISettings _spiSettings;
-   SPIClass *_spi;
-   int _ss;
+ SPISettings _spiSettings;
+ SPIClass* _spi;
+ int _ss;
 };
 
 #endif
+
+
+
+
