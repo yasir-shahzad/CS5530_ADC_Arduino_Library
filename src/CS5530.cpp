@@ -89,9 +89,15 @@ void CS5530::resetBit(uint8_t reg, uint32_t dat) {
      uint8_t cmd = 0;
     switch (reg)
     {
-	    case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
-	    case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
-	    case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
+    case CMD_GAIN_WRITE:
+      cmd = CMD_GAIN_READ;
+      break;
+    case CMD_OFFSET_WRITE:
+      cmd = CMD_OFFSET_READ;
+      break;
+    case CMD_CONFIG_WRITE:
+      cmd = CMD_CONFIG_READ;
+      break;
     }
 
     tmp =  readRegister(cmd);
