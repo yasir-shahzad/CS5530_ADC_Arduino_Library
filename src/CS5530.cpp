@@ -44,15 +44,15 @@ bool CS5530::reset(void)
 
     // Initilizing SPI port
     for (i = 0; i < 15; i++) {
-        write8(CMD_SYNC1);
+        writeByte(CMD_SYNC1);
     }
-    write8(CMD_SYNC0);
+    writeByte(CMD_SYNC0);
     // Reseting CS5530
-    writeRegister(CMD_CONFIG_WRITE, REG_CONFIG_RS);
+    setRegister(CMD_CONFIG_WRITE, REG_CONFIG_RS);
     delay(1); // Wait 1 milli seconds
-    writeRegister(CMD_CONFIG_WRITE, CMD_NULL);
+    setRegister(CMD_CONFIG_WRITE, CMD_NULL);
 
-    tmp = readRegister(CMD_CONFIG_READ);
+    tmp = getRegister(CMD_CONFIG_READ);
 
     if (tmp & REG_CONFIG_RV) {
         return true;
@@ -65,21 +65,47 @@ bool CS5530::reset(void)
 //x1, 2, 4, 8, 16, 32, 64 are avaialable
 bool CS5530::setGain(uint8_t gainValue)
 {
-  if (gainValue > 0b111)
-    gainValue = 0b111; //Error check
+
 
   uint8_t value = getRegister(NAU7802_CTRL1);
   value &= 0b11111000; //Clear gain bits
   value |= gainValue;  //Mask in new bits
 
   return (setRegister(NAU7802_CTRL1, value));
+
+
+
+
+   if (gainValue > 1 << 6)
+    gainValue = 1 << 6; //Error check
+
+    // Clear gain bits (bits 12, 13, 14, and 15)
+    registerValue &= ~(0b1111 << 12);
+
+    // Set new gain bits
+    registerValue |= (static_cast<uint32_t>(gainValue) << 12);
+
+    // Return true to indicate success
+    return true;
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
 
-void CS5530::writeRegister(uint8_t reg, uint32_t dat) {
-    write8(reg);
+bool CS5530::setRegister(uint8_t reg, uint32_t dat) {
+    writeByte(reg);
     write32(dat);
+    return true;
 }
 
 void CS5530::setBit(uint8_t reg, uint32_t dat) {
@@ -92,9 +118,9 @@ void CS5530::setBit(uint8_t reg, uint32_t dat) {
         case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
     }
 
-    tmp =  readRegister(cmd);
+    tmp =  getRegister(cmd);
     tmp |= dat;
-    write8(reg);
+    writeByte(reg);
     write32(tmp);
 }
 
@@ -115,13 +141,13 @@ void CS5530::resetBit(uint8_t reg, uint32_t dat)
         break;
     }
 
-    tmp = readRegister(cmd);
+    tmp = getRegister(cmd);
     tmp &= ~dat;
-    write8(reg);
+    writeByte(reg);
     write32(tmp);
 }
 
-void CS5530::write8(uint8_t dat) {
+void CS5530::writeByte(uint8_t dat) {
     digitalWrite(_ss, LOW);
     _spi->beginTransaction(_spiSettings);
     SPI.transfer(dat & 0xFF);
@@ -135,13 +161,13 @@ void CS5530::write32(uint32_t dat) {
 
     for(i=3; i>=0; i--) {
         tmp = (uint8_t)( (dat >> (8*i)) & 0xff);
-        write8(tmp);
+        writeByte(tmp);
     }
 }
 
-uint32_t CS5530::readRegister(uint8_t reg) {
+uint32_t CS5530::getRegister(uint8_t reg) {
     uint32_t dat;
-    write8(reg);
+    writeByte(reg);
     dat = read32();
 
     return dat;
@@ -151,13 +177,13 @@ uint32_t CS5530::read32(void) {
     uint32_t dat = 0;
 
     for (int i = 0; i < 4; i++) {
-        dat = (dat << 8) | read8();
+        dat = (dat << 8) | readByte();
     }
 
     return dat;
 }
 
-uint8_t CS5530::read8(void) {
+uint8_t CS5530::readByte(void) {
     uint8_t dat = 0;
     digitalWrite(_ss, LOW);
     _spi->beginTransaction(_spiSettings);
@@ -169,7 +195,7 @@ uint8_t CS5530::read8(void) {
 }
 
 
-bool CS5530::isReady(void) {
+bool CS5530::available(void) {
     if(digitalRead(12) == 0)
     {
         return true;
@@ -178,15 +204,15 @@ bool CS5530::isReady(void) {
     return false;
 }
 
-uint32_t CS5530::readWeightsclae()
+uint32_t CS5530::getReading()
 {
-    if (!isReady())
+    if (!available())
     {
         // Return -2 for busy status
         return -2;
     }
 
-    uint32_t rec_data = readRegister(CMD_NULL);
+    uint32_t rec_data = getRegister(CMD_NULL);
     if ((rec_data & REG_DATA_OF) == 0)
     {
         // Perform sign extension and return the result
@@ -207,13 +233,13 @@ uint8_t CS5530::calibrate(uint8_t calibrate_type, int cfg_reg, int setup_reg)
     cfg_reg = (int)((calibrate_type % 2 == 1) ? (cfg_reg | REG_CONFIG_IS) : (cfg_reg));
     uint8_t cmd, read_reg;
 
-    writeRegister(CMD_CONFIG_WRITE, cfg_reg);
-    write8(cmd);
+    setRegister(CMD_CONFIG_WRITE, cfg_reg);
+    writeByte(cmd);
 
     for (waste_time = WASTE_TIME; waste_time > 0; waste_time--)
         ;
 
-    calibrate_result = readRegister(read_reg);
+    calibrate_result = getRegister(read_reg);
 
     printf("The calibration result is: ");
     printf("%x ", calibrate_result);
@@ -253,14 +279,14 @@ uint8_t CS5530::convert(uint8_t convert_type, uint8_t setup_reg_no, uint8_t reg_
         break;
     }
 
-    writeRegister(CMD_CONFIG_WRITE, cfg_reg);
+    setRegister(CMD_CONFIG_WRITE, cfg_reg);
     delay(10);
-    // write8(cmd);
+    // writeByte(cmd);
     Serial.print("Conversion begins...\n");
 
     delay(10);
     uint8_t test = 0;
-    //	test = read8();   // wastercycles
+    //	test = readByte();   // wastercycles
     // final_result = read32();
 
     Serial.print("The raw result is:");

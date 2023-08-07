@@ -137,29 +137,42 @@ class CS5530
     void setSPI(SPIClass &spi);
     void setSPIFrequency(uint32_t);
     uint32_t twoComplement(uint32_t);
+    bool isConnected();                        //Returns true if device acks at the I2C address
 
-    bool setGain(uint8_t gainValue);        //Set the gain. x1, 2, 4, 8, 16, 32, 64, 128 are available
-    bool setSampleRate(uint8_t rate);       //Set the readings per second. 10, 20, 40, 80, and 320 samples per second is available
+    bool available();                          //Returns true if Cycle Ready bit is set (conversion is complete)
+    int32_t getReading();                      //Returns 24-bit reading. Assumes CR Cycle Ready bit (ADC conversion complete) has been checked by .available()
+    int32_t getAverage(uint8_t samplesToTake); //Return the average of a given number of readings
 
-    uint8_t read8(void);
-    uint32_t read32(void);
-    uint32_t readRegister(uint8_t);
+
+    void calculateZeroOffset(uint8_t averageAmount = 8); // Also called taring. Call this with nothing on the scale
+    void setZeroOffset(int32_t newZeroOffset); // Sets the internal variable. Useful for users who are loading values from NVM.
+    int32_t getZeroOffset();    // Ask library for this value. Useful for storing value into NVM.
+
+    bool setGain(uint8_t gainValue); // Set the gain. x1, 2, 4, 8, 16, 32, 64, 128 are available
+    bool setSampleRate(uint8_t rate); // Set the readings per second. 10, 20, 40, 80, and 320 samples per second is available
+
+    uint8_t getRegister(uint8_t registerAddress);             //Get contents of a register
+    bool setRegister(uint8_t registerAddress, uint32_t value); //Send a given value to be written to given address. Return true if successful
+
     uint8_t convert(uint8_t, uint8_t, uint8_t, int);
     uint8_t calibrate(uint8_t, int, int);
-    void write32(uint32_t);
-    void write8(uint8_t);
-    void writeRegister(uint8_t, uint32_t);
+  
     void setBit(uint8_t, uint32_t);
     void resetBit(uint8_t, uint32_t);
-    bool isReady(void);
-   // bool reset(void);
     bool reset(); //Resets all registers to Power Of Defaults
-    uint32_t readWeightsclae();
 
-  private:
+
+    private:
     SPISettings _spiSettings;
-    SPIClass *_spi;
+    SPIClass* _spi;
     int _ss;
+
+    uint8_t readByte();
+    int32_t read32();
+    void write32(uint32_t value);
+    void writeByte(uint8_t value);
+
+
 };
 
 #endif

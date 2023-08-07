@@ -41,25 +41,25 @@ void setup()
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
-    uint32_t tmp = cell.readRegister(CMD_CONFIG_READ);
+    uint32_t tmp = cell.getRegister(CMD_CONFIG_READ);
     Serial.print("CONFIG Register:");
     Serial.println(tmp, BIN);
 
     // uint32_t tmpdata = REG_CONFIG_UNIPOLAR | REG
 
-    cell.writeRegister(CMD_CONFIG_WRITE, CS5530_UNIPOLAR);
+    cell.setRegister(CMD_CONFIG_WRITE, CS5530_UNIPOLAR);
 
     cell.convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS);
 
     uint32_t cmpl = cell.twoComplement(0xFFFFFFFF);
 
-    cell.write8(CMD_CONVERSION_CONTINU);
-    cell.writeRegister(CMD_OFFSET_WRITE, cmpl);
+    cell.writeByte(CMD_CONVERSION_CONTINU);
+    cell.setRegister(CMD_OFFSET_WRITE, cmpl);
 }
 
 void loop()
 {
-    int32_t recData = cell.readWeightsclae();
+    int32_t recData = cell.getReading();
 
     if (recData > 0)
     {
