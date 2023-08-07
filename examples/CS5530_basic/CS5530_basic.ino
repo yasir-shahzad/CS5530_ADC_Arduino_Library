@@ -41,13 +41,14 @@ void setup()
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
-    uint32_t tmp = cell.getRegister(CMD_CONFIG_READ);
+    uint32_t tmp = cell.getRegister(    ConfigRead         
+);
     Serial.print("CONFIG Register:");
     Serial.println(tmp, BIN);
 
     // uint32_t tmpdata = REG_CONFIG_UNIPOLAR | REG
 
-    cell.setRegister(CMD_CONFIG_WRITE, CS5530_UNIPOLAR);
+    cell.setRegister(ConfigWrite, CS5530_UNIPOLAR);
 
     cell.convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS);
 

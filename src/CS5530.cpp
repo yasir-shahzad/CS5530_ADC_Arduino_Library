@@ -8,7 +8,7 @@
 
 CS5530::CS5530():
 _spiSettings(CS5530_DEFAULT_SPI_FREQUENCY, MSBFIRST, SPI_MODE0),
-_spi(&CS5530_DEFAULT_SPI), _ss(CS5530_DEFAULT_SS_PIN)
+_spi(&CS5530_DEFAULT_SPI), _ss(CS5530_SS)
 {
     _spi->begin();
 }
@@ -44,16 +44,16 @@ bool CS5530::reset(void)
 
     // Initilizing SPI port
     for (i = 0; i < 15; i++) {
-        writeByte(CMD_SYNC1);
+        writeByte(Sync1);
     }
-    writeByte(CMD_SYNC0);
+    writeByte(Sync0);
     // Reseting CS5530
-    setRegister(CMD_CONFIG_WRITE, REG_CONFIG_RS);
+    setRegister(ConfigWrite, SYSTEM_RESET);
     delay(1); // Wait 1 milli seconds
-    setRegister(CMD_CONFIG_WRITE, CMD_NULL);
+    setRegister(ConfigWrite, Null);
 
-    tmp = getRegister(CMD_CONFIG_READ);
-
+    tmp = getRegister(ConfigRead);
+//valid reset will set RV to 1
     if (tmp & REG_CONFIG_RV) {
         return true;
     }
@@ -61,25 +61,58 @@ bool CS5530::reset(void)
     return false;
 }
 
+
+//Set the gain
+//x1, 2, 4, 8, 16, 32, 64 are avaialable
+bool CS5530::setGain(uint8_t gainValue)
+{
+    if (gainValue > 1 << 6)
+     gainValue = 1 << 6; //Error check
+
+    // Clear gain bits (bits 12, 13, 14, and 15)
+    registerValue &= ~(0b1111 << 12);
+
+   //Mask in new bits
+    registerValue |= (static_cast<uint32_t>(gainValue) << 12);
+
+    // Return true to indicate success
+    return true;
+      return (setRegister(NAU7802_CTRL1, value));
+}
+
+//Set the readings per second
+//10, 20, 40, 80, and 320 samples per second is available
+bool CS5530::setSampleRate(uint8_t rate)
+{
+  if (rate > 0b111)
+    rate = 0b111; //Error check
+
+  uint8_t value = getRegister(NAU7802_CTRL2);
+  value &= 0b10001111; //Clear CRS bits
+  value |= rate << 4;  //Mask in new CRS bits
+
+  return (setRegister(NAU7802_CTRL2, value));
+}
+
 //Call when scale is setup, level, at running temperature, with nothing on it
-void NAU7802::calculateZeroOffset(uint8_t averageAmount)
+void CS5530::calculateZeroOffset(uint8_t averageAmount)
 {
   setZeroOffset(getAverage(averageAmount));
 }
 
 //Sets the internal variable. Useful for users who are loading values from NVM.
-void NAU7802::setZeroOffset(int32_t newZeroOffset)
+void CS5530::setZeroOffset(int32_t newZeroOffset)
 {
   _zeroOffset = newZeroOffset;
 }
 
-int32_t NAU7802::getZeroOffset()
+int32_t CS5530::getZeroOffset()
 {
   return (_zeroOffset);
 }
 
 //Call after zeroing. Provide the float weight sitting on scale. Units do not matter.
-void NAU7802::calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount)
+void CS5530::calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount)
 {
   int32_t onScale = getAverage(averageAmount);
   float newCalFactor = (onScale - _zeroOffset) / (float)weightOnScale;
@@ -88,19 +121,19 @@ void NAU7802::calculateCalibrationFactor(float weightOnScale, uint8_t averageAmo
 
 //Pass a known calibration factor into library. Helpful if users is loading settings from NVM.
 //If you don't know your cal factor, call setZeroOffset(), then calculateCalibrationFactor() with a known weight
-void NAU7802::setCalibrationFactor(float newCalFactor)
+void CS5530::setCalibrationFactor(float newCalFactor)
 {
   _calibrationFactor = newCalFactor;
 }
 
-float NAU7802::getCalibrationFactor()
+float CS5530::getCalibrationFactor()
 {
   return (_calibrationFactor);
 }
 
 
 //Returns the y of y = mx + b using the current weight on scale, the cal factor, and the offset.
-float NAU7802::getWeight(bool allowNegativeWeights, uint8_t samplesToTake)
+float -CS5530::getWeight(bool allowNegativeWeights, uint8_t samplesToTake)
 {
   int32_t onScale = getAverage(samplesToTake);
 
@@ -118,23 +151,6 @@ float NAU7802::getWeight(bool allowNegativeWeights, uint8_t samplesToTake)
 }
 
 
-//Set the gain
-//x1, 2, 4, 8, 16, 32, 64 are avaialable
-bool CS5530::setGain(uint8_t gainValue)
-{
-   if (gainValue > 1 << 6)
-    gainValue = 1 << 6; //Error check
-
-    // Clear gain bits (bits 12, 13, 14, and 15)
-    registerValue &= ~(0b1111 << 12);
-
-   //Mask in new bits
-    registerValue |= (static_cast<uint32_t>(gainValue) << 12);
-
-    // Return true to indicate success
-    return true;
-      return (setRegister(NAU7802_CTRL1, value));
-}
 
 
 
@@ -151,7 +167,8 @@ bool CS5530::setRegister(uint8_t reg, uint32_t dat) {
 //     {
 //         case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
 //         case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
-//         case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
+//         case ConfigWrite: cmd =     ConfigRead         
+; break; 
 //     }
 
 //     tmp =  getRegister(cmd);
@@ -197,8 +214,9 @@ bool CS5530::getBit(uint8_t bitNumber, uint8_t registerAddress)
 //     case CMD_OFFSET_WRITE:
 //         cmd = CMD_OFFSET_READ;
 //         break;
-//     case CMD_CONFIG_WRITE:
-//         cmd = CMD_CONFIG_READ;
+//     case ConfigWrite:
+//         cmd =     ConfigRead         
+;
 //         break;
 //     }
 
@@ -310,19 +328,31 @@ uint32_t CS5530::getReading()
     }
 }
 
-//Set the readings per second
-//10, 20, 40, 80, and 320 samples per second is available
-bool CS5530::setSampleRate(uint8_t rate)
+//Return the average of a given number of readings
+//Gives up after 1000ms so don't call this function to average 8 samples setup at 1Hz output (requires 8s)
+int32_t CS5530::getAverage(uint8_t averageAmount)
 {
-  if (rate > 0b111)
-    rate = 0b111; //Error check
+  long total = 0;
+  uint8_t samplesAquired = 0;
 
-  uint8_t value = getRegister(NAU7802_CTRL2);
-  value &= 0b10001111; //Clear CRS bits
-  value |= rate << 4;  //Mask in new CRS bits
+  unsigned long startTime = millis();
+  while (1)
+  {
+    if (available() == true)
+    {
+      total += getReading();
+      if (++samplesAquired == averageAmount)
+        break; //All done
+    }
+    if (millis() - startTime > 1000)
+      return (0); //Timeout - Bail with error
+    delay(1);
+  }
+  total /= averageAmount;
 
-  return (setRegister(NAU7802_CTRL2, value));
+  return (total);
 }
+
 
 
 uint8_t CS5530::calibrate(uint8_t calibrate_type, int cfg_reg, int setup_reg)
@@ -332,7 +362,7 @@ uint8_t CS5530::calibrate(uint8_t calibrate_type, int cfg_reg, int setup_reg)
     cfg_reg = (int)((calibrate_type % 2 == 1) ? (cfg_reg | REG_CONFIG_IS) : (cfg_reg));
     uint8_t cmd, read_reg;
 
-    setRegister(CMD_CONFIG_WRITE, cfg_reg);
+    setRegister(ConfigWrite, cfg_reg);
     writeByte(cmd);
 
     for (waste_time = WASTE_TIME; waste_time > 0; waste_time--)
@@ -378,7 +408,7 @@ uint8_t CS5530::convert(uint8_t convert_type, uint8_t setup_reg_no, uint8_t reg_
         break;
     }
 
-    setRegister(CMD_CONFIG_WRITE, cfg_reg);
+    setRegister(ConfigWrite, cfg_reg);
     delay(10);
     // writeByte(cmd);
     Serial.print("Conversion begins...\n");

@@ -119,7 +119,7 @@ typedef enum  {
 
 #define CS5530_DEFAULT_SPI           SPI
 #define CS5530_DEFAULT_SPI_FREQUENCY 8E6 
-#define CS5530_DEFAULT_SS_PIN        10
+#define CS5530_SS        10
 
 
 
@@ -134,7 +134,7 @@ class CS5530
   public:
     CS5530();
     int begin();
-    void setPin(int ss = CS5530_DEFAULT_SS_PIN);
+    void setPin(int ss = CS5530_SS);
     void setSPI(SPIClass &spi);
     void setSPIFrequency(uint32_t);
     uint32_t twoComplement(uint32_t);
@@ -168,7 +168,6 @@ class CS5530
     bool getBit(uint8_t bitNumber, uint8_t registerAddress);   //Return a given bit within a register
 
     bool reset(); //Resets all registers to Power Of Defaults
-
 
     private:
     SPISettings _spiSettings;
