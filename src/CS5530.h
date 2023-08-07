@@ -97,17 +97,18 @@ typedef enum
 } CS5530_SPS_Values;
 
 typedef enum  {
-    REG_CONFIG_PSS = 1UL << 31, ///< Power Save Select
-    REG_CONFIG_PDM = 1UL << 30, ///< Power Down Mode
-    REG_CONFIG_RS  = 1UL << 29, ///< Reset System
-    REG_CONFIG_RV  = 1UL << 28, ///< Reset Valid
-    REG_CONFIG_IS  = 1UL << 27, ///< Input Short
-    REG_CONFIG_VRS = 1UL << 25, ///< Voltage Reference Select
-    REG_CONFIG_A1  = 1UL << 24, ///< A1 Configuration
-    REG_CONFIG_A0  = 1UL << 23, ///< A0 Configuration
-    REG_CONFIG_FRS = 1UL << 19, ///< Filter Rate Select
-    REG_CONFIG_OCD = 1UL << 9   ///< Open Circuit Detect
+    PWR_SAVE_SELECT     = 1UL << 31, ///< Power Save Select
+    POWER_DOWN_MODE     = 1UL << 30, ///< Power Down Mode
+    SYSTEM_RESET        = 1UL << 29, ///< Reset System
+    RESET_VALID         = 1UL << 28, ///< Reset Valid
+    INPUT_SHORT         = 1UL << 27, ///< Input Short
+    VOLTAGE_REF_SELECT  = 1UL << 25, ///< Voltage Reference Select
+    A1_CONFIGURATION    = 1UL << 24, ///< A1 Configuration
+    A0_CONFIGURATION    = 1UL << 23, ///< A0 Configuration
+    FILTER_RATE_SELECT  = 1UL << 19, ///< Filter Rate Select
+    OPEN_CIRCUIT_DETECT = 1UL << 9   ///< Open Circuit Detect
 } RegisterConfig;
+
 
 //Unipolar / Bipolar
 #define CS5530_UNIPOLAR     1UL << 10
@@ -143,10 +144,15 @@ class CS5530
     int32_t getReading();                      //Returns 24-bit reading. Assumes CR Cycle Ready bit (ADC conversion complete) has been checked by .available()
     int32_t getAverage(uint8_t samplesToTake); //Return the average of a given number of readings
 
+    void calculateZeroOffset(uint8_t averageAmount = 8); //Also called taring. Call this with nothing on the scale
+    void setZeroOffset(int32_t newZeroOffset);           //Sets the internal variable. Useful for users who are loading values from NVM.
+    int32_t getZeroOffset();                             //Ask library for this value. Useful for storing value into NVM.
 
-    void calculateZeroOffset(uint8_t averageAmount = 8); // Also called taring. Call this with nothing on the scale
-    void setZeroOffset(int32_t newZeroOffset); // Sets the internal variable. Useful for users who are loading values from NVM.
-    int32_t getZeroOffset();    // Ask library for this value. Useful for storing value into NVM.
+    void calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount = 8); //Call this with the value of the thing on the scale. Sets the calibration factor based on the weight on scale and zero offset.
+    void setCalibrationFactor(float calFactor);                                      //Pass a known calibration factor into library. Helpful if users is loading settings from NVM.
+    float getCalibrationFactor();                                                    //Ask library for this value. Useful for storing value into NVM.
+
+    float getWeight(bool allowNegativeWeights = false, uint8_t samplesToTake = 8); //Once you've set zero offset and cal factor, you can ask the library to do the calculations for you.
 
     bool setGain(uint8_t gainValue); // Set the gain. x1, 2, 4, 8, 16, 32, 64, 128 are available
     bool setSampleRate(uint8_t rate); // Set the readings per second. 10, 20, 40, 80, and 320 samples per second is available
@@ -157,8 +163,10 @@ class CS5530
     uint8_t convert(uint8_t, uint8_t, uint8_t, int);
     uint8_t calibrate(uint8_t, int, int);
   
-    void setBit(uint8_t, uint32_t);
-    void resetBit(uint8_t, uint32_t);
+    bool setBit(uint8_t bitNumber, uint8_t registerAddress);   //Mask & set a given bit within a register
+    bool clearBit(uint8_t bitNumber, uint8_t registerAddress); //Mask & clear a given bit within a register
+    bool getBit(uint8_t bitNumber, uint8_t registerAddress);   //Return a given bit within a register
+
     bool reset(); //Resets all registers to Power Of Defaults
 
 

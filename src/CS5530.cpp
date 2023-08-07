@@ -61,43 +61,79 @@ bool CS5530::reset(void)
     return false;
 }
 
+//Call when scale is setup, level, at running temperature, with nothing on it
+void NAU7802::calculateZeroOffset(uint8_t averageAmount)
+{
+  setZeroOffset(getAverage(averageAmount));
+}
+
+//Sets the internal variable. Useful for users who are loading values from NVM.
+void NAU7802::setZeroOffset(int32_t newZeroOffset)
+{
+  _zeroOffset = newZeroOffset;
+}
+
+int32_t NAU7802::getZeroOffset()
+{
+  return (_zeroOffset);
+}
+
+//Call after zeroing. Provide the float weight sitting on scale. Units do not matter.
+void NAU7802::calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount)
+{
+  int32_t onScale = getAverage(averageAmount);
+  float newCalFactor = (onScale - _zeroOffset) / (float)weightOnScale;
+  setCalibrationFactor(newCalFactor);
+}
+
+//Pass a known calibration factor into library. Helpful if users is loading settings from NVM.
+//If you don't know your cal factor, call setZeroOffset(), then calculateCalibrationFactor() with a known weight
+void NAU7802::setCalibrationFactor(float newCalFactor)
+{
+  _calibrationFactor = newCalFactor;
+}
+
+float NAU7802::getCalibrationFactor()
+{
+  return (_calibrationFactor);
+}
+
+
+//Returns the y of y = mx + b using the current weight on scale, the cal factor, and the offset.
+float NAU7802::getWeight(bool allowNegativeWeights, uint8_t samplesToTake)
+{
+  int32_t onScale = getAverage(samplesToTake);
+
+  //Prevent the current reading from being less than zero offset
+  //This happens when the scale is zero'd, unloaded, and the load cell reports a value slightly less than zero value
+  //causing the weight to be negative or jump to millions of pounds
+  if (allowNegativeWeights == false)
+  {
+    if (onScale < _zeroOffset)
+      onScale = _zeroOffset; //Force reading to zero
+  }
+
+  float weight = (onScale - _zeroOffset) / _calibrationFactor;
+  return (weight);
+}
+
+
 //Set the gain
 //x1, 2, 4, 8, 16, 32, 64 are avaialable
 bool CS5530::setGain(uint8_t gainValue)
 {
-
-
-  uint8_t value = getRegister(NAU7802_CTRL1);
-  value &= 0b11111000; //Clear gain bits
-  value |= gainValue;  //Mask in new bits
-
-  return (setRegister(NAU7802_CTRL1, value));
-
-
-
-
    if (gainValue > 1 << 6)
     gainValue = 1 << 6; //Error check
 
     // Clear gain bits (bits 12, 13, 14, and 15)
     registerValue &= ~(0b1111 << 12);
 
-    // Set new gain bits
+   //Mask in new bits
     registerValue |= (static_cast<uint32_t>(gainValue) << 12);
 
     // Return true to indicate success
     return true;
-
-
-
-
-
-
-
-
-
-
-
+      return (setRegister(NAU7802_CTRL1, value));
 }
 
 
@@ -108,80 +144,129 @@ bool CS5530::setRegister(uint8_t reg, uint32_t dat) {
     return true;
 }
 
-void CS5530::setBit(uint8_t reg, uint32_t dat) {
-    uint32_t tmp = 0;
-    uint8_t cmd = 0;
-    switch (reg)
-    {
-        case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
-        case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
-        case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
-    }
+// void CS5530::setBit(uint8_t reg, uint32_t dat) {
+//     uint32_t tmp = 0;
+//     uint8_t cmd = 0;
+//     switch (reg)
+//     {
+//         case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
+//         case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
+//         case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
+//     }
 
-    tmp =  getRegister(cmd);
-    tmp |= dat;
-    writeByte(reg);
-    write32(tmp);
-}
+//     tmp =  getRegister(cmd);
+//     tmp |= dat;
+//     writeByte(reg);
+//     write32(tmp);
+// }
 
-void CS5530::resetBit(uint8_t reg, uint32_t dat)
+
+//Mask & set a given bit within a register
+bool CS5530::setBit(uint8_t bitNumber, uint8_t registerAddress)
 {
-    uint32_t tmp = 0;
-    uint8_t cmd = 0;
-    switch (reg)
-    {
-    case CMD_GAIN_WRITE:
-        cmd = CMD_GAIN_READ;
-        break;
-    case CMD_OFFSET_WRITE:
-        cmd = CMD_OFFSET_READ;
-        break;
-    case CMD_CONFIG_WRITE:
-        cmd = CMD_CONFIG_READ;
-        break;
-    }
-
-    tmp = getRegister(cmd);
-    tmp &= ~dat;
-    writeByte(reg);
-    write32(tmp);
+  uint32_t value = getRegister(registerAddress);
+  value |= (1 << bitNumber); //Set this bit
+  return (setRegister(registerAddress, value));
 }
 
-void CS5530::writeByte(uint8_t dat) {
+//Mask & clear a given bit within a register
+bool CS5530::clearBit(uint8_t bitNumber, uint8_t registerAddress)
+{
+  uint32_t value = getRegister(registerAddress);
+  value &= ~(1 << bitNumber); //Set this bit
+  return (setRegister(registerAddress, value));
+}
+
+//Return a given bit within a register
+bool CS5530::getBit(uint8_t bitNumber, uint8_t registerAddress)
+{
+  uint32_t value = getRegister(registerAddress);
+  value &= (1 << bitNumber); //Clear all but this bit
+  return (value);
+}
+
+// void CS5530::resetBit(uint8_t reg, uint32_t dat)
+// {
+//     uint32_t tmp = 0;
+//     uint8_t cmd = 0;
+//     switch (reg)
+//     {
+//     case CMD_GAIN_WRITE:
+//         cmd = CMD_GAIN_READ;
+//         break;
+//     case CMD_OFFSET_WRITE:
+//         cmd = CMD_OFFSET_READ;
+//         break;
+//     case CMD_CONFIG_WRITE:
+//         cmd = CMD_CONFIG_READ;
+//         break;
+//     }
+
+//     tmp = getRegister(cmd);
+//     tmp &= ~dat;
+//     writeByte(reg);
+//     write32(tmp);
+// }
+
+void CS5530::writeByte(uint8_t data) {
     digitalWrite(_ss, LOW);
     _spi->beginTransaction(_spiSettings);
-    SPI.transfer(dat & 0xFF);
+    _spi->transfer(data);
     _spi->endTransaction();
     digitalWrite(_ss, HIGH);
 }
 
-void CS5530::write32(uint32_t dat) {
-    int i;
-    uint8_t tmp;
 
-    for(i=3; i>=0; i--) {
-        tmp = (uint8_t)( (dat >> (8*i)) & 0xff);
-        writeByte(tmp);
+// void CS5530::write32(uint32_t dat) {
+//     uint8_t i;
+//     uint8_t tmp;
+
+//     for(i=3; i>=0; i--) {
+//         tmp = (uint8_t)( (dat >> (8*i)) & 0xff);
+//         writeByte(tmp);
+//     }
+// }
+
+void CS5530::write32(uint32_t dat) {
+    for (int8_t i = 3; i >= 0; i--) {
+        writeByte(static_cast<uint8_t>((dat >> (8 * i)) & 0xFF));
     }
 }
+
+// uint32_t CS5530::getRegister(uint8_t reg) {
+//     uint32_t dat;
+//     writeByte(reg);
+//     dat = read32();
+
+//     return dat;
+// }
 
 uint32_t CS5530::getRegister(uint8_t reg) {
-    uint32_t dat;
     writeByte(reg);
-    dat = read32();
-
-    return dat;
+    return read32();
 }
+
+
+// uint32_t CS5530::read32(void) {
+//     uint32_t dat = 0;
+
+//     for (int i = 0; i < 4; i++) {
+//         dat = (dat << 8) | readByte();
+//     }
+
+//     return dat;
+// }
 
 uint32_t CS5530::read32(void) {
-    uint32_t dat = 0;
+    uint32_t result = 0;
 
     for (int i = 0; i < 4; i++) {
-        dat = (dat << 8) | readByte();
+        result |= (static_cast<uint32_t>(readByte()) << (8 * i));
     }
 
-    return dat;
+    return result;
 }
+
 
 uint8_t CS5530::readByte(void) {
     uint8_t dat = 0;
@@ -223,6 +308,20 @@ uint32_t CS5530::getReading()
         // Return -1 for overflow status
         return -1;
     }
+}
+
+//Set the readings per second
+//10, 20, 40, 80, and 320 samples per second is available
+bool CS5530::setSampleRate(uint8_t rate)
+{
+  if (rate > 0b111)
+    rate = 0b111; //Error check
+
+  uint8_t value = getRegister(NAU7802_CTRL2);
+  value &= 0b10001111; //Clear CRS bits
+  value |= rate << 4;  //Mask in new CRS bits
+
+  return (setRegister(NAU7802_CTRL2, value));
 }
 
 
