@@ -30,11 +30,12 @@ CS5530 cell;
 uint32_t startTime;
 int32_t value;
 
-void setup() {
+void setup()
+{
     Serial.begin(115200);
 
     if (cell.reset())
-    	Serial.println("CS5530 Initialized Successfully");
+        Serial.println("CS5530 Initialized Successfully");
     else
         Serial.println("Starting CS5530 failed");
 
@@ -44,37 +45,32 @@ void setup() {
     Serial.print("CONFIG Register:");
     Serial.println(tmp, BIN);
 
-    //uint32_t tmpdata = REG_CONFIG_UNIPOLAR | REG
+    // uint32_t tmpdata = REG_CONFIG_UNIPOLAR | REG
 
     cell.writeRegister(CMD_CONFIG_WRITE, CS5530_UNIPOLAR);
 
-  
-    //cell.Convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS );
+    cell.convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS);
 
     uint32_t cmpl = cell.twoComplement(0xFFFFFFFF);
 
-
     cell.write8(CMD_CONVERSION_CONTINU);
     cell.writeRegister(CMD_OFFSET_WRITE, cmpl);
-	
-
 }
 
-
-void loop() {
+void loop()
+{
     int32_t recData = cell.readWeightsclae();
 
-    if(recData > 0) {
-     value = 0.97 * value + 0.03 * recData;	// running average		
-     delay(5); 
+    if (recData > 0)
+    {
+        value = 0.97 * value + 0.03 * recData; // running average
+        delay(5);
     }
 
-    if(millis() > startTime){
-      Serial.println (String((value-111683)/18) + " grms");
-      startTime = millis()+200;
+    if (millis() > startTime)
+    {
+        Serial.println(value);
+        //  Serial.println (String((value-111683)/18) + " grms");
+        startTime = millis() + 200;
     }
-
- }
-
-
-
+}
