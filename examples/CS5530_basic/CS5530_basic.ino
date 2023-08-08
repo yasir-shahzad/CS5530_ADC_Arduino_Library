@@ -17,13 +17,11 @@ https://github.com/yasir-shahzad/CS5530
 
 */
 
-
 #include "Arduino.h"
 
-#include <avr/pgmspace.h>
-#include "SPI.h"
 #include "CS5530.h"
-
+#include "SPI.h"
+#include <avr/pgmspace.h>
 
 CS5530 cell;
 
@@ -41,8 +39,7 @@ void setup()
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
-    uint32_t tmp = cell.getRegister(    ConfigRead         
-);
+    uint32_t tmp = cell.getRegister(ConfigRead);
     Serial.print("CONFIG Register:");
     Serial.println(tmp, BIN);
 

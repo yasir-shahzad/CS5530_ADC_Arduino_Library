@@ -114,9 +114,9 @@ int32_t CS5530::getZeroOffset()
 //Call after zeroing. Provide the float weight sitting on scale. Units do not matter.
 void CS5530::calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount)
 {
-  int32_t onScale = getAverage(averageAmount);
-  float newCalFactor = (onScale - _zeroOffset) / (float)weightOnScale;
-  setCalibrationFactor(newCalFactor);
+    int32_t onScale = getAverage(averageAmount);
+    float newCalFactor = (onScale - _zeroOffset) / (float)weightOnScale;
+    setCalibrationFactor(newCalFactor);
 }
 
 //Pass a known calibration factor into library. Helpful if users is loading settings from NVM.
