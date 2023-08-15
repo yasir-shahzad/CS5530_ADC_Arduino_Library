@@ -12,11 +12,6 @@
 #define CS5530_H
 
 
-#define RESET_TIME 1200000
-#define WASTE_TIME 90000000
-
-#define SELF_OFFSET     1
-#define SELF_GAIN       2
 #define SYSTEM_OFFSET   3
 #define SYSTEM_GAIN     4
 
