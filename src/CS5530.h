@@ -155,8 +155,8 @@ class CS5530
     uint8_t getRegister(uint8_t registerAddress);             //Get contents of a register
     bool setRegister(uint8_t registerAddress, uint32_t value); //Send a given value to be written to given address. Return true if successful
 
-    uint8_t convert(uint8_t, uint8_t, uint8_t, int);
-    uint8_t calibrate(uint8_t, int, int);
+    uint8_t convert(uint8_t convertType, uint8_t regNo, int wordRate);
+    uint8_t calibrate(uint8_t calibrateType, int cfgReg);
   
     bool setBit(uint8_t bitNumber, uint8_t registerAddress);   //Mask & set a given bit within a register
     bool clearBit(uint8_t bitNumber, uint8_t registerAddress); //Mask & clear a given bit within a register

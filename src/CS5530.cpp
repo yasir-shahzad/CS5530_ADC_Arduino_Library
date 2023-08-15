@@ -365,34 +365,33 @@ int32_t CS5530::getAverage(uint8_t averageAmount)
   return (total);
 }
 
-uint8_t calibrate(uint8_t calibrate_type, int cfg_reg, int setup_reg) 
+uint8_t CS5530::calibrate(uint8_t calibrateType, int cfgReg) 
 {
-  uint32_t calibrate_result;
-  cfg_reg = (int)((calibrate_type % 2 == 1) ? (cfg_reg | IS) : (cfg_reg));
-  uint8_t cmd, read_reg;
-  
-  switch (calibrate_type)
-  {
-  case SYSTEM_OFFSET:
-      cmd = SystemOffsetCalib;
-      read_reg = OffsetRead;
-      break;
-  case SYSTEM_GAIN:
-      cmd = SystemGainCalib;
-      read_reg = GainRead;
-      break;
-  }
-  
-  setRegister(CMD_WRITE_SETUP_REG1, setup_reg);
-  setRegister(CMD_WRITE_CFG_REG, cfg_reg);
-  writeByte(cmd);
-  
-  delayMiroseconds(10); // waste some time
-  
-  calibrate_result = getRegister(read_reg); 
-  printf("The calibration result is: %x\n", calibrate_result);
-  
-  return 1;
+    uint32_t calibrateResult;
+    cfgReg = (int)((calibrateType % 2 == 1) ? (cfgReg | INPUT_SHORT) : (cfgReg));
+    uint8_t cmd, readReg;
+    
+    switch (calibrateType)
+    {
+    case SYSTEM_OFFSET:
+        cmd = SystemOffsetCalib;
+        readReg = OffsetRead;
+        break;
+    case SYSTEM_GAIN:
+        cmd = SystemGainCalib;
+        readReg = GainRead;
+        break;
+    }
+    
+    setRegister(ConfigWrite, cfgReg);
+    writeByte(cmd);
+    
+    delayMicroseconds(10); // waste some time
+    
+    calibrateResult = getRegister(readReg); 
+    printf("The calibration result is: %x\n", calibrateResult);
+    
+    return 1;
 }
 
 
@@ -408,47 +407,47 @@ uint32_t CS5530::twoComplement(uint32_t n)
   return native_int;
 }
 
-uint8_t CS5530::convert(uint8_t convert_type, uint8_t setup_reg_no, uint8_t reg_no, int word_rate)
+uint8_t CS5530::convert(uint8_t convertType, uint8_t regNo, int wordRate)
 {
-  uint32_t final_result = 0;
-  uint32_t cfg_reg = (uint32_t)VOLTAGE_REF_SELECT;
-  int setup_reg = ((setup_reg_no % 2 == 1) ? ((word_rate) << 16) : word_rate);
-  uint8_t cmd;
-  
-  switch (convert_type)
-  {
-  case SINGLE_CONVERSION:
-      cmd = SingleConversion;
-      break;
-  case CONTINUED_CONVERSION:
-      cmd = ContinuousConversion;
-      break;
-  }
+    uint32_t finalResult = 0;
+    uint32_t cfgReg = (uint32_t)VOLTAGE_REF_SELECT;
+    
+    uint8_t cmd;
+    
+    switch (convertType)
+    {
+    case SINGLE_CONVERSION:
+        cmd = SingleConversion;
+        break;
+    case CONTINUED_CONVERSION:
+        cmd = ContinuousConversion;
+        break;
+    }
 
-  setRegister(CMD_WRITE_SETUP_REG1, setup_reg);
-	setRegister(CMD_WRITE_CFG_REG, cfg_reg);
-	writeByte(cmd);
-	printf("Conversion begins...\n");
+    setRegister(CMD_WRITE_CFG_REG, cfgReg);
+    writeByte(cmd);
+    printf("Conversion begins...\n");
 
-	sleep(10);
-	u8 test = 0;
-	read_byte(&test, 1);
-	read_byte(convert_result, 4);
-  
-  Serial.print("The raw result is:");
-  Serial.println(final_result, BIN);
-  Serial.print("The raw result is:");
-  Serial.println(final_result);
-  
-  final_result = twoComplement(final_result);
-  Serial.print("The final result is:");
-  Serial.println(final_result, BIN);
-  Serial.print("The fianl result is:");
-  Serial.println(final_result);
-  
-  final_result = final_result * 500 / 0x7fffff;
-  Serial.print("The fianl result is:");
-  Serial.println(final_result);
-  
-  return 1;
+    sleep(10);
+    u8 test = 0;
+    read_byte(&test, 1);
+    read_byte(convertResult, 4);
+    
+    Serial.print("The raw result is:");
+    Serial.println(finalResult, BIN);
+    Serial.print("The raw result is:");
+    Serial.println(finalResult);
+    
+    finalResult = twoComplement(finalResult);
+    Serial.print("The final result is:");
+    Serial.println(finalResult, BIN);
+    Serial.print("The final result is:");
+    Serial.println(finalResult);
+    
+    finalResult = finalResult * 500 / 0x7fffff;
+    Serial.print("The final result is:");
+    Serial.println(finalResult);
+    
+    return 1;
 }
+
