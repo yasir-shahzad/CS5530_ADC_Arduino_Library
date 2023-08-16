@@ -52,7 +52,7 @@ void setup() {
   
     //cell.Convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS );
 
-     uint32_t cmpl = cell.twoComplement(0xFFFFFFFF);
+     uint32_t cmpl = cell.calculateTwoComplement(0xFFFFFFFF);
 
 
      cell.writeByte(CMD_CONVERSION_CONTINU);

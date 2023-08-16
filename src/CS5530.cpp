@@ -77,7 +77,8 @@ bool CS5530::setGain(uint8_t gainValue)
 
     // Return true to indicate success
     return true;
-      return (setRegister(NAU7802_CTRL1, value));
+    //TODO:
+   // return (setRegister(NAU7802_CTRL1, value));
 }
 
 //Set the readings per second
@@ -395,25 +396,26 @@ uint8_t CS5530::calibrate(uint8_t calibrateType, int cfgReg)
 }
 
 
-uint32_t CS5530::twoComplement(uint32_t n)
+uint32_t CS5530::calculateTwoComplement(uint32_t value)
 {
-  uint32_t negative = (n & (1UL << 23)) != 0;
-  uint32_t native_int;
+    uint32_t isNegative = (value & (1UL << 23)) != 0;
+    uint32_t result;
   
-  if (negative)
-      native_int = n | ~((1UL << 24) - 1);
-  else
-      native_int = n;
-  return native_int;
+    if (isNegative)
+        result = value | ~((1UL << 24) - 1);
+    else
+        result = value;
+    
+    return result;
 }
+
 
 uint8_t CS5530::convert(uint8_t convertType, uint8_t regNo, int wordRate)
 {
     uint32_t finalResult = 0;
     uint32_t cfgReg = (uint32_t)VOLTAGE_REF_SELECT;
-    
     uint8_t cmd;
-    
+
     switch (convertType)
     {
     case SINGLE_CONVERSION:
@@ -438,7 +440,7 @@ uint8_t CS5530::convert(uint8_t convertType, uint8_t regNo, int wordRate)
     Serial.print("The raw result is:");
     Serial.println(finalResult);
     
-    finalResult = twoComplement(finalResult);
+    finalResult = calculateTwoComplement(finalResult);
     Serial.print("The final result is:");
     Serial.println(finalResult, BIN);
     Serial.print("The final result is:");

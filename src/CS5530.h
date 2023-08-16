@@ -131,8 +131,8 @@ class CS5530
     int begin();
     void setPin(int ss = CS5530_SS);
     void setSPI(SPIClass &spi);
-    void setSPIFrequency(uint32_t);
-    uint32_t twoComplement(uint32_t);
+    void setSPIFrequency(uint32_t value);
+    uint32_t calculateTwoComplement(uint32_t value);
     bool isConnected();                        //Returns true if device acks at the I2C address
 
     bool available();                          //Returns true if Cycle Ready bit is set (conversion is complete)
