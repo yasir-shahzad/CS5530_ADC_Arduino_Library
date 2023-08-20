@@ -158,6 +158,7 @@ class CS5530
 
     bool setGain(uint8_t gainValue); // Set the gain. x1, 2, 4, 8, 16, 32, 64, 128 are available
     bool setSampleRate(uint32_t rate); // Set the readings per second. 10, 20, 40, 80, and 320 samples per second is available
+    bool setConversionMode(uint8_t conversionMode);
 
     uint32_t getRegister(uint8_t commnad);             //Get contents of a register
     bool setRegister(uint8_t command, uint32_t value); //Send a given value to be written to given address. Return true if successful

@@ -22,10 +22,11 @@ int CS5530::begin()
   if (!reset())
       return 0;
 
-  writeByte(ContinuousConversion);
   uint32_t cmpl = calculateTwoComplement(0xFFFFFFFF);
   setRegister(OffsetRegister, cmpl);
-  //setGain(CS5530_GAIN_64);
+  setGain(CS5530_GAIN_32);
+  setSampleRate(CS5530_SPS_200);
+  setConversionMode(ContinuousConversion);
 
   return 1;
 }
@@ -77,10 +78,10 @@ bool CS5530::setGain(uint8_t gainValue)
     gainValue = 1 << 6; // Error check
 
   uint32_t value = getRegister(GainRegister);
-  // Clear gain bits (bits 12, 13, 14, and 15)
-  value &= ~(0b1111 << 12);
+  // Clear gain bits (bits 24, 25, 26, 27 and 28)
+  value &= ~((uint32_t)(0b111111) << 24);
   // Mask in new bits
-  value |= (static_cast<uint32_t>(gainValue) << 12);
+  value |= (static_cast<uint32_t>(gainValue) << 24);
 
   // Return true to indicate success
   return (setRegister(GainRegister, value));
@@ -90,14 +91,20 @@ bool CS5530::setGain(uint8_t gainValue)
 //10, 20, 40, 80, and 320 samples per second is available
 bool CS5530::setSampleRate(uint32_t rate)
 {
-  if (rate > 0b111)
-    rate = 0b111; //Error check
+  if (rate > 0b1100)
+    rate = 0b1100; //Error check
 
   uint32_t value = getRegister(ConfigRegister);
-  value &= 0b10001111; //Clear CRS bits
-  value |= rate << 11;  //Mask in new CRS bits
+  // Clear sps bits (bits 11, 12, 13 and 14)
+  value &= ~((uint32_t)(0b1111) << 11);
+  // Mask in new bits
+  value |= (static_cast<uint32_t>(rate) << 11);
 
   return (setRegister(ConfigRegister, value));
+}
+
+bool CS5530::setConversionMode(uint8_t conversionMode) {
+  writeByte(conversionMode);
 }
 
 //Call when scale is setup, level, at running temperature, with nothing on it
