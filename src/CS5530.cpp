@@ -144,7 +144,6 @@ float CS5530::getCalibrationFactor()
   return (_calibrationFactor);
 }
 
-
 //Returns the y of y = mx + b using the current weight on scale, the cal factor, and the offset.
 float CS5530::getWeight(bool allowNegativeWeights, uint8_t samplesToTake)
 {
@@ -170,24 +169,6 @@ bool CS5530::setRegister(uint8_t command, uint32_t value)
   return true;
 }
 
-// void CS5530::setBit(uint8_t reg, uint32_t dat) {
-//     uint32_t tmp = 0;
-//     uint8_t cmd = 0;
-//     switch (reg)
-//     {
-//         case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
-//         case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
-//         case ConfigWrite: cmd =     ConfigRead         
-// ; break; 
-//     }
-
-//     tmp =  getRegister(cmd);
-//     tmp |= dat;
-//     writeByte(reg);
-//     write32(tmp);
-// }
-
-
 //Mask & set a given bit within a register
 bool CS5530::setBit(uint8_t bitNumber, uint8_t registerAddress)
 {
@@ -211,30 +192,6 @@ bool CS5530::getBit(uint8_t bitNumber, uint8_t registerAddress)
   value &= (1 << bitNumber); //Clear all but this bit
   return (value);
 }
-
-// void CS5530::resetBit(uint8_t reg, uint32_t dat)
-// {
-//     uint32_t tmp = 0;
-//     uint8_t cmd = 0;
-//     switch (reg)
-//     {
-//     case CMD_GAIN_WRITE:
-//         cmd = CMD_GAIN_READ;
-//         break;
-//     case CMD_OFFSET_WRITE:
-//         cmd = CMD_OFFSET_READ;
-//         break;
-//     case ConfigWrite:
-//         cmd =     ConfigRead         
-// ;
-//         break;
-//     }
-
-//     tmp = getRegister(cmd);
-//     tmp &= ~dat;
-//     writeByte(reg);
-//     write32(tmp);
-// }
 
 void CS5530::writeByte(uint8_t data) {
   digitalWrite(_chipSelectPin, LOW);
