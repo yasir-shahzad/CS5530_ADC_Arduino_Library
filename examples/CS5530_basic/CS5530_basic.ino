@@ -50,14 +50,13 @@ void loop()
     if (recData >= 0)
     {
         value = 0.97 * value + 0.03 * recData; // running average
-         Serial.println(value);
-       // delay(5);
+        delay(5);
     }
 
     if (millis() > startTime)
     {
        
-        //  Serial.println (String((value-111683)/18) + " grms");
+          Serial.println (String(value) + " grms");
         startTime = millis() + 200;
     }
 }

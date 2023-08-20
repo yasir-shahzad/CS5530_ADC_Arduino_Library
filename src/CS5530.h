@@ -17,6 +17,7 @@
 #define SYSTEM_OFFSET   3
 #define SYSTEM_GAIN     4
 
+
 typedef enum {
     SINGLE_CONVERSION = 1,
     CONTINUED_CONVERSION = 2
@@ -58,6 +59,10 @@ typedef enum
     GainWrite           = 0x02, ///< Write the gain value.
     ConfigRead          = 0x0B, ///< Read the configuration value.
     ConfigWrite         = 0x03, ///< Write the configuration value.
+
+    OffsetRegister      = 0x01, ///< offset register addr.
+    GainRegister        = 0x02, ///< gain register addr.
+    ConfigRegister      = 0x03, ///< config register addr.
     SingleConversion    = 0x80, ///< Perform a single conversion.
     ContinuousConversion= 0xC0, ///< Perform continuous conversions.
     SystemOffsetCalib   = 0x85, ///< System offset calibration.

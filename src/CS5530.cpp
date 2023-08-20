@@ -24,7 +24,8 @@ int CS5530::begin()
 
   writeByte(ContinuousConversion);
   uint32_t cmpl = calculateTwoComplement(0xFFFFFFFF);
-  setRegister(OffsetWrite, cmpl);
+  setRegister(OffsetRegister, cmpl);
+  //setGain(CS5530_GAIN_64);
 
   return 1;
 }
@@ -46,26 +47,25 @@ void CS5530::setSPIFrequency(uint32_t frequency)
 
 bool CS5530::reset(void)
 {
-    int i;
-    uint32_t tmp;
+  uint32_t result;
 
-    // Initilizing SPI port
-    for (i = 0; i < 15; i++) {
-        writeByte(Sync1);
-    }
-    writeByte(Sync0);
-    // Reseting CS5530
-    setRegister(ConfigWrite, SYSTEM_RESET);
-    delay(1); // Wait 1 milli seconds
-    setRegister(ConfigWrite, Null);
+  // Initilizing SPI port
+  for (int i = 0; i < 15; i++) {
+      writeByte(Sync1);
+  }
+  writeByte(Sync0);
+  // Reseting CS5530
+  setRegister(ConfigRegister, SYSTEM_RESET);
+  delay(1); // Wait 1 milli seconds
+  setRegister(ConfigRegister, Null);
+  result = getRegister(ConfigRegister);
 
-    tmp = getRegister(ConfigRead);
-//valid reset will set RV to 1
-    if (tmp & RESET_VALID) {
-        return true;
-    }
+  // valid reset will set RV to 1
+  if (result & RESET_VALID) {
+      return true;
+  }
 
-    return false;
+  return false;
 }
 
 
@@ -76,14 +76,14 @@ bool CS5530::setGain(uint8_t gainValue)
   if (gainValue > 1 << 6)
     gainValue = 1 << 6; // Error check
 
-  uint32_t value = getRegister(GainRead);
+  uint32_t value = getRegister(GainRegister);
   // Clear gain bits (bits 12, 13, 14, and 15)
   value &= ~(0b1111 << 12);
   // Mask in new bits
   value |= (static_cast<uint32_t>(gainValue) << 12);
 
   // Return true to indicate success
-  return (setRegister(GainWrite, value));
+  return (setRegister(GainRegister, value));
 }
 
 //Set the readings per second
@@ -93,11 +93,11 @@ bool CS5530::setSampleRate(uint32_t rate)
   if (rate > 0b111)
     rate = 0b111; //Error check
 
-  uint32_t value = getRegister(ConfigRead);
+  uint32_t value = getRegister(ConfigRegister);
   value &= 0b10001111; //Clear CRS bits
   value |= rate << 11;  //Mask in new CRS bits
 
-  return (setRegister(ConfigWrite, value));
+  return (setRegister(ConfigRegister, value));
 }
 
 //Call when scale is setup, level, at running temperature, with nothing on it
@@ -245,9 +245,13 @@ void CS5530::write32(uint32_t dat)
 }
 
 uint32_t CS5530::getRegister(uint8_t command) {
-    writeByte(command);
-    return read32();
+  if (command > 0x00 && command < 0x04) {
+      command |= 0x08; // Set the 4th bit of the command
+  }
+  writeByte(command);
+  return read32();
 }
+
 
 uint32_t CS5530::read32(void) {
   uint32_t result = 0;
@@ -273,7 +277,7 @@ uint8_t CS5530::readByte() {
 
 bool CS5530::available(void) 
 {
-  if(digitalRead(12) == 0)
+  if(!digitalRead(12))
       return true;
   
   return false;
@@ -337,7 +341,7 @@ uint8_t CS5530::calibrate(uint8_t calibrateType, int cfgReg)
         break;
     }
     
-    setRegister(ConfigWrite, cfgReg);
+    setRegister(ConfigRegister, cfgReg);
     writeByte(cmd);
     
     delayMicroseconds(10); // waste some time
@@ -351,15 +355,15 @@ uint8_t CS5530::calibrate(uint8_t calibrateType, int cfgReg)
 
 uint32_t CS5530::calculateTwoComplement(uint32_t value)
 {
-    uint32_t isNegative = (value & (1UL << 23)) != 0;
-    uint32_t result;
-  
-    if (isNegative)
+  uint32_t result;
+  uint32_t isNegative = (value & (1UL << 23)) != 0;
+
+  if (isNegative)
         result = value | ~((1UL << 24) - 1);
-    else
+  else
         result = value;
-    
-    return result;
+
+  return result;
 }
 
 
@@ -379,7 +383,7 @@ uint8_t CS5530::convert(uint8_t convertType, uint8_t regNo, int wordRate)
         break;
     }
 
-    setRegister(ConfigWrite, cfgReg);
+    setRegister(ConfigRegister, cfgReg);
     writeByte(cmd);
     printf("Conversion begins...\n");
 
