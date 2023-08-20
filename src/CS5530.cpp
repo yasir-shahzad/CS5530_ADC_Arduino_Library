@@ -26,8 +26,8 @@ int CS5530::begin()
 
   uint32_t cmpl = calculateTwoComplement(0xFFFFFFFF);
   setRegister(OffsetRegister, cmpl);
-  setGain(CS5530_GAIN_32);
-  setSampleRate(CS5530_SPS_100);
+  //setGain(CS5530_GAIN_32);
+  //setSampleRate(CS5530_SPS_100);
   setConversionMode(ContinuousConversion);
 
   return 1;
@@ -258,9 +258,8 @@ int32_t CS5530::getReading()
   if ((recData & REG_DATA_OF) == 0) {
       // Perform sign extension and return the result
      // return static_cast<int32_t>(recData << 24) >> 24;
-
+       //  return static_cast<int32_t>(recData >> 8) ;
           recData &= 0xFFFFFF00;
-           
            recData = recData >> 8;
             return recData;
   } else {
