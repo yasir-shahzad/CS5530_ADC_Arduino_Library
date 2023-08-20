@@ -40,9 +40,9 @@ void setup() {
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
-    u32 tmp = cell.readRegister(CMD_CONFIG_READ);
-    Serial.print("CONFIG Register:");
-    Serial.println(tmp, BIN);
+    // u32 tmp = cell.readRegister(CMD_CONFIG_READ);
+    // Serial.print("CONFIG Register:");
+    // Serial.println(tmp, BIN);
 
     //u32 tmpdata = REG_CONFIG_UNIPOLAR | REG
 
@@ -70,7 +70,7 @@ void loop() {
     }
 
     if(millis() > startTime){
-      Serial.println (String((value-111683)/18) + " grms");
+      Serial.println (String(recData) + " grms");
       startTime = millis()+200;
     }
 
