@@ -22,10 +22,12 @@ int CS5530::begin()
   if (!reset())
       return 0;
 
+  setRegister(ConfigRegister, CS5530_UNIPOLAR);
+
   uint32_t cmpl = calculateTwoComplement(0xFFFFFFFF);
   setRegister(OffsetRegister, cmpl);
   setGain(CS5530_GAIN_32);
-  setSampleRate(CS5530_SPS_200);
+  setSampleRate(CS5530_SPS_100);
   setConversionMode(ContinuousConversion);
 
   return 1;
@@ -255,7 +257,12 @@ int32_t CS5530::getReading()
   uint32_t recData = getRegister(Null);
   if ((recData & REG_DATA_OF) == 0) {
       // Perform sign extension and return the result
-      return static_cast<int32_t>(recData << 24) >> 24;
+     // return static_cast<int32_t>(recData << 24) >> 24;
+
+          recData &= 0xFFFFFF00;
+           
+           recData = recData >> 8;
+            return recData;
   } else {
       // Return -1 for overflow status
       return -1;

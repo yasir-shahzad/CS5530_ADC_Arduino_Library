@@ -56,7 +56,7 @@ void loop()
     if (millis() > startTime)
     {
        
-          Serial.println (String(value) + " grms");
+          Serial.println (String(recData) + " grms");
         startTime = millis() + 200;
     }
 }
