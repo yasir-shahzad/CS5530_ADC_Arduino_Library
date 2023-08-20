@@ -257,9 +257,10 @@ int32_t CS5530::getReading()
   uint32_t recData = getRegister(Null);
   if ((recData & REG_DATA_OF) == 0) {
       // Perform sign extension and return the result
-      recData &= 0xFFFFFF00;
-      recData = recData >> 8;
-      return recData;
+      return (recData & 0xFFFFFF00) >> 8;
+      // recData &= 0xFFFFFF00;
+      // recData = recData >> 8;
+      // return recData;
   } else {
       // Return -1 for overflow status
       return -1;
