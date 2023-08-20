@@ -11,6 +11,8 @@
 #ifndef CS5530_H
 #define CS5530_H
 
+#include <SPI.h>
+
 
 #define SYSTEM_OFFSET   3
 #define SYSTEM_GAIN     4
@@ -48,7 +50,7 @@ typedef enum {
  * @note This enumeration is based on the Tic Stepper Motor Controller User's Guide, available at
  * 
  */
-enum class Command : uint8_t
+typedef enum 
 {
     OffsetRead          = 0x09, ///< Read the offset value.
     OffsetWrite         = 0x01, ///< Write the offset value.
@@ -63,7 +65,7 @@ enum class Command : uint8_t
     Sync1               = 0xFF, ///< Part of the serial port re-initialization sequence.
     Sync0               = 0xFE, ///< End of the serial port re-initialization sequence.
     Null                = 0x00  ///< Clear a port flag and keep the converter in continuous conversion mode.
-};
+} Command;
 
 typedef enum
 {
@@ -150,10 +152,10 @@ class CS5530
     float getWeight(bool allowNegativeWeights = false, uint8_t samplesToTake = 8); //Once you've set zero offset and cal factor, you can ask the library to do the calculations for you.
 
     bool setGain(uint8_t gainValue); // Set the gain. x1, 2, 4, 8, 16, 32, 64, 128 are available
-    bool setSampleRate(uint8_t rate); // Set the readings per second. 10, 20, 40, 80, and 320 samples per second is available
+    bool setSampleRate(uint32_t rate); // Set the readings per second. 10, 20, 40, 80, and 320 samples per second is available
 
-    uint8_t getRegister(uint8_t registerAddress);             //Get contents of a register
-    bool setRegister(uint8_t registerAddress, uint32_t value); //Send a given value to be written to given address. Return true if successful
+    uint32_t getRegister(uint8_t commnad);             //Get contents of a register
+    bool setRegister(uint8_t command, uint32_t value); //Send a given value to be written to given address. Return true if successful
 
     uint8_t convert(uint8_t convertType, uint8_t regNo, int wordRate);
     uint8_t calibrate(uint8_t calibrateType, int cfgReg);
@@ -167,10 +169,13 @@ class CS5530
     private:
     SPISettings _spiSettings;
     SPIClass* _spi;
-    int _ss;
+    int _chipSelectPin;
+      //y = mx+b
+  int32_t _zeroOffset;      //This is b
+  float _calibrationFactor; //This is m. User provides this number so that we can output y when requested
 
     uint8_t readByte();
-    int32_t read32();
+    uint32_t read32();
     void write32(uint32_t value);
     void writeByte(uint8_t value);
 

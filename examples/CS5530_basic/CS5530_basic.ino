@@ -19,7 +19,7 @@ https://github.com/yasir-shahzad/CS5530
 
 #include "Arduino.h"
 
-#include "CS5530.h"
+#include <CS5530.h>
 #include "SPI.h"
 #include <avr/pgmspace.h>
 
@@ -34,40 +34,47 @@ void setup()
 
     if (cell.reset())
         Serial.println("CS5530 Initialized Successfully");
-    else
-        Serial.println("Starting CS5530 failed");
+    else {
+        Serial.println("CS5530 Initialization Failed");
+        while (1);
+    }
+        
 
     //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
 
-    uint32_t tmp = cell.getRegister(ConfigRead);
+   // uint32_t tmp = cell.getRegister(Command::ConfigRead);
+    uint32_t tmp = cell.getRegister(static_cast<uint8_t>(Command::ConfigRead));
+
     Serial.print("CONFIG Register:");
     Serial.println(tmp, BIN);
 
     // uint32_t tmpdata = REG_CONFIG_UNIPOLAR | REG
 
-    cell.setRegister(ConfigWrite, CS5530_UNIPOLAR);
+    cell.setRegister(static_cast<uint8_t>(Command::ConfigWrite), CS5530_UNIPOLAR);
 
-    cell.convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS);
+  //  cell.convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS);
 
-    uint32_t cmpl = cell.calculateTwoComplement(0xFFFFFFFF);
+   uint32_t cmpl = cell.calculateTwoComplement(0xFFFFFFFF);
 
-    cell.writeByte(CMD_CONVERSION_CONTINU);
-    cell.setRegister(CMD_OFFSET_WRITE, cmpl);
+   //cell.writeByte(ContinuousConversion);
+   cell.setRegister(OffsetWrite, cmpl);
 }
 
 void loop()
 {
     int32_t recData = cell.getReading();
 
+  Serial.println(recData);
     if (recData > 0)
     {
         value = 0.97 * value + 0.03 * recData; // running average
-        delay(5);
+         Serial.println(value);
+       // delay(5);
     }
 
     if (millis() > startTime)
     {
-        Serial.println(value);
+       
         //  Serial.println (String((value-111683)/18) + " grms");
         startTime = millis() + 200;
     }
