@@ -15,11 +15,18 @@ _spi(&CS5530_DEFAULT_SPI), _chipSelectPin(CS5530_SS)
 
 int CS5530::begin()
 {
-    pinMode(_chipSelectPin, OUTPUT);
-    digitalWrite(_chipSelectPin, HIGH);
-    _spi->begin();
+  pinMode(_chipSelectPin, OUTPUT);
+  digitalWrite(_chipSelectPin, HIGH);
+  _spi->begin();
 
-    return 1;
+  if (!reset())
+      return 0;
+
+  writeByte(ContinuousConversion);
+  uint32_t cmpl = calculateTwoComplement(0xFFFFFFFF);
+  setRegister(OffsetWrite, cmpl);
+
+  return 1;
 }
 
 void CS5530::setPin(int ss)

@@ -30,42 +30,24 @@ int32_t value;
 
 void setup()
 {
-    Serial.begin(115200);
+  Serial.begin(115200);
 
-    if (cell.reset())
-        Serial.println("CS5530 Initialized Successfully");
-    else {
-        Serial.println("CS5530 Initialization Failed");
-        while (1);
-    }
-        
-
-    //  cell.CS5530_Write_Reg(CMD_GAIN_WRITE, 0x3);
-
-   // uint32_t tmp = cell.getRegister(Command::ConfigRead);
-    uint32_t tmp = cell.getRegister(static_cast<uint8_t>(Command::ConfigRead));
-
-    Serial.print("CONFIG Register:");
-    Serial.println(tmp, BIN);
-
-    // uint32_t tmpdata = REG_CONFIG_UNIPOLAR | REG
-
-    cell.setRegister(static_cast<uint8_t>(Command::ConfigWrite), CS5530_UNIPOLAR);
-
-  //  cell.convert(CONTINUED_CONVERSION, 1, 1, (int)WORD_RATE_3200SPS);
-
-   uint32_t cmpl = cell.calculateTwoComplement(0xFFFFFFFF);
-
-   //cell.writeByte(ContinuousConversion);
-   cell.setRegister(OffsetWrite, cmpl);
+  if (cell.begin()) {
+      Serial.println("CS5530 Initialized Successfully");
+  }
+ else {
+      Serial.println("CS5530 Initialization Failed");
+      while (1)
+          ;
+  }
 }
 
 void loop()
 {
     int32_t recData = cell.getReading();
 
-  Serial.println(recData);
-    if (recData > 0)
+ // Serial.println(recData);
+    if (recData >= 0)
     {
         value = 0.97 * value + 0.03 * recData; // running average
          Serial.println(value);
