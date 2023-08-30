@@ -1,4 +1,9 @@
 # Arduino CS5530
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Installation instructions](https://www.ardu-badge.com/badge/CS5530.svg?)](https://www.ardu-badge.com/CS5530)
+[![Commits since latest](https://img.shields.io/github/commits-since/yasir-shahzad/CS5530/latest)](https://github.com/yasir-shahzad/CS5530/commits/master)
+[![Build Status](https://github.com/yasir-shahzad/CS5530/workflows/LibraryBuild/badge.svg)](https://github.com/yasir-shahzad/CS5530/actions)
+![Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=yasir-shahzad_CS5530)
 
 [![Build Status](https://travis-ci.org/sandeepmistry/arduino-LoRa.svg?branch=master)](https://travis-ci.org/sandeepmistry/arduino-LoRa)
 
