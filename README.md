@@ -5,8 +5,6 @@
 [![Build Status](https://github.com/yasir-shahzad/CS5530/workflows/LibraryBuild/badge.svg)](https://github.com/yasir-shahzad/CS5530/actions)
 ![Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=yasir-shahzad_CS5530)
 
-[![Build Status](https://travis-ci.org/sandeepmistry/arduino-LoRa.svg?branch=master)](https://travis-ci.org/sandeepmistry/arduino-LoRa)
-
 An [Arduino](https://arduino.cc/) library for sending and receiving data using [Cirrus logic CS5530](https://www.lora-alliance.org/) .
 
 ## Compatible Hardware
