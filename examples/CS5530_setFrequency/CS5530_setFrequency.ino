@@ -1,5 +1,5 @@
 /*
- * CS5530 ADC Example with Arduino Uno/Nano (ATmega328P)
+ * CS5530 ADC Example: Offset Calibration and Filtered Reading
  * 
  * Connections:
  * Arduino (Uno/Nano)   →   CS5530 (24-bit ADC)      | Description
@@ -21,10 +21,8 @@
  #include <SPI.h>
  #include <CS5530.h>
  
- // === ADC Setup ===
  CS5530 cell;
  
- // === Filtered Reading Variables ===
  int32_t filteredValue = 0;
  unsigned long nextPrintTime = 0;
  
@@ -34,32 +32,52 @@
  
    Serial.println(F("Initializing CS5530..."));
  
-   if (cell.begin()) {
+   if (cell.reset()) {
      Serial.println(F("CS5530 Initialized Successfully"));
    } else {
      Serial.println(F("CS5530 Initialization Failed"));
-     while (true) delay(1000); // Halt on failure
+     while (true) delay(1000); // Halt
    }
  
-   filteredValue = cell.getReading(); // Initialize with first valid reading
+   // Read and print current CONFIG register
+   uint32_t config = cell.getRegister(ConfigRead);
+   Serial.print(F("CONFIG Register: "));
+   Serial.println(config, BIN);
+ 
+   // Set unipolar mode (for load cell / weight applications)
+   cell.setRegister(ConfigWrite, CS5530_UNIPOLAR);
+ 
+   // Optional: calculate and apply two's complement offset
+   uint32_t offset = cell.calculateTwoComplement(0xFFFFFFFF);
+   cell.setRegister(CMD_OFFSET_WRITE, offset);
+ 
+   // Start continuous conversion
+   cell.writeByte(CMD_CONVERSION_CONTINU);
+ 
+   // Initialize filter with first reading
+   filteredValue = cell.getReading();
  }
  
  void loop() {
    int32_t rawReading = cell.getReading();
  
-   if (rawReading >= 0) {
-     // Apply exponential moving average filter
+   if (rawReading > 0) {
+     // Apply exponential moving average
      filteredValue = 0.97 * filteredValue + 0.03 * rawReading;
    }
  
+   // Print value at regular interval
    if (millis() >= nextPrintTime) {
-     Serial.print(F("Reading: "));
-     Serial.print(filteredValue);
+     // Convert raw value to grams (adjust offset and scale for your calibration)
+     int32_t grams = (filteredValue - 111683) / 18;
+ 
+     Serial.print(F("Weight: "));
+     Serial.print(grams);
      Serial.println(F(" grms"));
  
      nextPrintTime = millis() + 200;
    }
  
-   delay(5); // Short delay to avoid spamming SPI bus
+   delay(5);
  }
  

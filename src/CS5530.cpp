@@ -1,276 +1,224 @@
-#include <string.h>
-#include <avr/pgmspace.h>
-#include <SPI.h>
 #include "CS5530.h"
-#include "Arduino.h"
 
+CS5530::CS5530()
+    : _spiSettings(CS5530_DEFAULT_SPI_FREQUENCY, MSBFIRST, SPI_MODE0),
+      _spi(&CS5530_DEFAULT_SPI),
+      _chipSelectPin(CS5530_SS) {}
 
+void CS5530::setPin(int ss) {
+    _chipSelectPin = ss;
+}
 
-void CS5530::SPI_Init(void) {
-    pinMode(AFECS,OUTPUT);
-    digitalWrite(AFECS, LOW);//enabled by default
-    SPI.begin ();//initialisation du bus SPI
-    SPI.setBitOrder(MSBFIRST);      //MSB first
-    SPI.setDataMode(SPI_MODE0);      //mode 0
-    SPI.setClockDivider(SPI_CLOCK_DIV8);   //divide the clock by 8 5MHz
+void CS5530::setSPI(SPIClass& spi) {
+    _spi = &spi;
+}
+
+void CS5530::setSPIFrequency(uint32_t frequency) {
+    _spiSettings = SPISettings(frequency, MSBFIRST, SPI_MODE0);
+}
+
+int CS5530::begin() {
+    pinMode(_chipSelectPin, OUTPUT);
+    digitalWrite(_chipSelectPin, HIGH);
+    _spi->begin();
+
+    if (!reset())
+        return 0;
+
+    setRegister(ConfigRegister, CS5530_UNIPOLAR);
+    setRegister(OffsetRegister, calculateTwoComplement(0xFFFFFFFF));
+    setConversionMode(ContinuousConversion);
+    return 1;
+}
+
+bool CS5530::reset() {
+    for (int i = 0; i < 15; i++) writeByte(Sync1);
+    writeByte(Sync0);
+
+    setRegister(ConfigRegister, SYSTEM_RESET);
     delay(1);
-    digitalWrite(AFECS, HIGH);//disable the chip
+    setRegister(ConfigRegister, Null);
+
+    return (getRegister(ConfigRegister) & RESET_VALID);
 }
 
-
-/*
-  Enable CS5530
-*/
-void CS5530::enableChip(void){
-    digitalWrite(AFECS, LOW);
+bool CS5530::setGain(uint8_t gain) {
+    if (gain > 64) gain = 64;
+    uint32_t value = getRegister(GainRegister);
+    value &= ~(0b111111UL << 24);
+    value |= (static_cast<uint32_t>(gain) << 24);
+    return setRegister(GainRegister, value);
 }
 
-
-/*
-  Disable CS5530
-*/
-void CS5530::disableChip(void){
-    digitalWrite(AFECS, HIGH);  
+bool CS5530::setSampleRate(uint32_t rate) {
+    if (rate > 0x0F) rate = 0x0F;
+    uint32_t value = getRegister(ConfigRegister);
+    value &= ~(0x0FUL << 11);
+    value |= (rate << 11);
+    return setRegister(ConfigRegister, value);
 }
 
-
- bool CS5530::CS5530_Reset(void) {
-    int i;
-    u32 tmp;
-	
-    //Initilizing SPI port
-    for(i=0;i<15;i++) {
-      CS5530_WriteByte(CMD_SYNC1);                                                                     
-    }
-	
-    CS5530_WriteByte(CMD_SYNC0);
-	
-    // Reseting CS5530
-    CS5530_Write_Reg(CMD_CONFIG_WRITE,  REG_CONFIG_RS);    	
-    delay(1);  //Wait 1 milli seconds
-    CS5530_Write_Reg(CMD_CONFIG_WRITE, CMD_NULL); 
-	
-    tmp = CS5530_Read_Reg(CMD_CONFIG_READ);	
-
-    if(tmp & REG_CONFIG_RV) {
-        return true;
-    }
-
-    return false;
- }
-
-
- void CS5530::CS5530_Write_Reg(u8 reg, u32 dat) {
- 
-    CS5530_WriteByte(reg);
-    CS5530_Write4Bytes(dat);
- }
-
-  void CS5530::CS5530_Set_Bit(u8 reg, u32 dat) {
-    u32 tmp = 0;
-    u8 cmd = 0;
-    switch (reg)
-    {
-        case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
-        case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
-        case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
-    }
-
-    tmp =  CS5530_Read_Reg(cmd);
-    tmp |= dat;
-    CS5530_WriteByte(reg);
-    CS5530_Write4Bytes(tmp);
- }
-
-  void CS5530::CS5530_Reset_Bit(u8 reg, u32 dat) {
-     u32 tmp = 0;
-     u8 cmd = 0;
-    switch (reg)
-    {
-	    case CMD_GAIN_WRITE:   cmd = CMD_GAIN_READ; break; 
-	    case CMD_OFFSET_WRITE: cmd = CMD_OFFSET_READ; break;		
-	    case CMD_CONFIG_WRITE: cmd = CMD_CONFIG_READ; break; 
-    }
-
-    tmp =  CS5530_Read_Reg(cmd);
-    tmp &= ~dat;
-    CS5530_WriteByte(reg);
-    CS5530_Write4Bytes(tmp);
- }
-
-
- void CS5530::CS5530_WriteByte(u8 dat)         {
- 
-    enableChip();
-    SPI.transfer(dat & 0xFF); 
-    disableChip();
-  }
-
- void CS5530::CS5530_Write4Bytes(u32 dat)         	{
-    int i;
-    u8 tmp;
-
-    for(i=3; i>=0; i--) {
-        tmp = (u8)( (dat >> (8*i)) & 0xff);
-        CS5530_WriteByte(tmp);
-    }
- }
- 
-
- u32 CS5530::CS5530_Read_Reg(u8 reg)      	{
-    u32 dat;
-	
-    CS5530_WriteByte(reg);
-    dat = CS5530_Read4Bytes();
-	
-    return dat;
- }
-
-
-u32 CS5530::CS5530_Read4Bytes(void)         {
-    int i;                                                      
-    u32 dat=0; 
-    u8 currntByte = 0;
-   
-    for(i=0; i<4; i++) {
-        dat    <<=    8;   
-        dat    |= CS5530_ReadByte();
-    }                                                                                                                           
-
-    return dat;                                                
+bool CS5530::setConversionMode(uint8_t mode) {
+    writeByte(mode);
+    return true;
 }
 
-u8 CS5530::CS5530_ReadByte(void)        {
-    u8 dat=0;
-	  
-    enableChip();
-    dat = SPI.transfer(CMD_NULL);
-    disableChip();
-	  
-    return dat;
+bool CS5530::available() {
+    return digitalRead(12) == LOW;
 }
 
+int32_t CS5530::getReading() {
+    if (!available()) return -2;
 
+    uint32_t data = getRegister(Null);
+    if ((data & REG_DATA_OF) == 0)
+        return static_cast<int32_t>(data & 0xFFFFFF00) >> 8;
 
-bool CS5530::CS5530_IsReady(void)
-{
-    if(digitalRead(12) == 0)
-    {
-        return true;
+    return -1;
+}
+
+int32_t CS5530::getAverage(uint8_t samples) {
+    long total = 0;
+    uint8_t count = 0;
+    unsigned long start = millis();
+
+    while (millis() - start < 1000) {
+        if (available()) {
+            total += getReading();
+            if (++count == samples) break;
+        }
+        delay(1);
     }
-
-    return false;
+    return (count > 0) ? total / count : 0;
 }
 
+float CS5530::getWeight(bool allowNegative, uint8_t samples) {
+    int32_t reading = getAverage(samples);
+    if (!allowNegative && reading < _zeroOffset)
+        reading = _zeroOffset;
+    return (reading - _zeroOffset) / _calibrationFactor;
+}
 
+void CS5530::calculateZeroOffset(uint8_t samples) {
+    setZeroOffset(getAverage(samples));
+}
 
+void CS5530::calculateCalibrationFactor(float weight, uint8_t samples) {
+    int32_t raw = getAverage(samples);
+    setCalibrationFactor((raw - _zeroOffset) / weight);
+}
 
-u32 CS5530::CS5530_Read_Weightsclae()
-{
-    u32 rec_data = 0;
+void CS5530::setZeroOffset(int32_t offset) {
+    _zeroOffset = offset;
+}
+
+int32_t CS5530::getZeroOffset() {
+    return _zeroOffset;
+}
+
+void CS5530::setCalibrationFactor(float factor) {
+    _calibrationFactor = factor;
+}
+
+float CS5530::getCalibrationFactor() {
+    return _calibrationFactor;
+}
+
+bool CS5530::setRegister(uint8_t reg, uint32_t value) {
+    writeByte(reg);
+    write32(value);
+    return true;
+}
+
+uint32_t CS5530::getRegister(uint8_t reg) {
+    if (reg > 0x00 && reg < 0x04)
+        reg |= 0x08;
+    writeByte(reg);
+    return read32();
+}
+
+bool CS5530::setBit(uint8_t bit, uint8_t reg) {
+    uint32_t value = getRegister(reg);
+    value |= (1UL << bit);
+    return setRegister(reg, value);
+}
+
+bool CS5530::clearBit(uint8_t bit, uint8_t reg) {
+    uint32_t value = getRegister(reg);
+    value &= ~(1UL << bit);
+    return setRegister(reg, value);
+}
+
+bool CS5530::getBit(uint8_t bit, uint8_t reg) {
+    return (getRegister(reg) & (1UL << bit)) != 0;
+}
+
+void CS5530::writeByte(uint8_t data) {
+    digitalWrite(_chipSelectPin, LOW);
+    _spi->beginTransaction(_spiSettings);
+    _spi->transfer(data);
+    _spi->endTransaction();
+    digitalWrite(_chipSelectPin, HIGH);
+}
+
+void CS5530::write32(uint32_t data) {
+    for (int i = 3; i >= 0; i--)
+        writeByte((data >> (8 * i)) & 0xFF);
+}
+
+uint8_t CS5530::readByte() {
+    _spi->beginTransaction(_spiSettings);
+    digitalWrite(_chipSelectPin, LOW);
+    uint8_t data = _spi->transfer(Null);
+    digitalWrite(_chipSelectPin, HIGH);
+    _spi->endTransaction();
+    return data;
+}
+
+uint32_t CS5530::read32() {
+    uint32_t result = 0;
+    for (int i = 0; i < 4; i++)
+        result = (result << 8) | readByte();
+    return result;
+}
+
+uint8_t CS5530::calibrate(uint8_t type, int cfgReg) {
+    uint8_t cmd = (type == SYSTEM_GAIN) ? SystemGainCalib : SystemOffsetCalib;
+    uint8_t readReg = (type == SYSTEM_GAIN) ? GainRead : OffsetRead;
+
+    if (type == SYSTEM_OFFSET)
+        cfgReg |= INPUT_SHORT;
+
+    setRegister(ConfigRegister, cfgReg);
+    writeByte(cmd);
+    delayMicroseconds(10);
     
-    EAdStatus status;
-
-   if(CS5530_IsReady()==false)
-   {
-       status = E_AD_STATUS_BUSY;
-       return -2;
-   }
-   else
-   {    
-       rec_data = CS5530_Read_Reg(CMD_NULL);
-       if((rec_data &  REG_DATA_OF) == 0)
-       {
-           rec_data &= 0xFFFFFF00;
-           
-           rec_data = rec_data >> 8;
-
-           status =  E_AD_STATUS_READY;
-
-           return rec_data;
-       }
-       else
-       {
-             status =  E_AD_STATUS_OVERFLOW;
-             return -1;
-       }       
-   }
-      
-   // return status;
+    uint32_t result = getRegister(readReg);
+    Serial.print("Calibration result: ");
+    Serial.println(result, HEX);
+    return 1;
 }
 
+uint8_t CS5530::convert(uint8_t type, uint8_t regNo, int rate) {
+    uint8_t cmd = (type == SINGLE_CONVERSION) ? SingleConversion : ContinuousConversion;
+    setRegister(ConfigRegister, VOLTAGE_REF_SELECT);
+    writeByte(cmd);
+    delayMicroseconds(10);
 
-u8 CS5530::Calibrate(u8 calibrate_type, int cfg_reg, int setup_reg) { 
-	u32 calibrate_result;
-	int waste_time, i;
-	cfg_reg = (int)((calibrate_type % 2 == 1) ? (cfg_reg|REG_CONFIG_IS):(cfg_reg));
-	u8 cmd,read_reg;
+    uint32_t result = 0;  // Placeholder: Add real reading logic here if needed
 
-	CS5530_Write_Reg(CMD_CONFIG_WRITE, cfg_reg);
-	CS5530_WriteByte(cmd);
+    Serial.print("Raw result: ");
+    Serial.println(result, BIN);
+    result = calculateTwoComplement(result);
+    Serial.print("Converted result: ");
+    Serial.println(result);
 
-	for(waste_time = WASTE_TIME; waste_time > 0; waste_time--)
-		;
-
-	calibrate_result = CS5530_Read_Reg(read_reg);
-
-	printf("The calibration result is: ");
-	printf("%x ", calibrate_result);
-	printf("\n");
-
-	return 1; 
+    result = result * 500 / 0x7FFFFF;
+    Serial.print("Scaled result: ");
+    Serial.println(result);
+    return 1;
 }
 
-u32 CS5530::TwoComplement(u32 n) {
-    u32 negative = (n & (1UL << 23)) != 0;
-	u32 native_int;
-
-	if (negative)
-	  native_int = n | ~((1UL << 24) - 1);
-	else
-	  native_int = n;
-	return native_int;
+uint32_t CS5530::calculateTwoComplement(uint32_t value) {
+    return (value & (1UL << 23)) ? (value | ~((1UL << 24) - 1)) : value;
 }
-
-
-
-u8 CS5530::Convert(u8 convert_type, u8 setup_reg_no, u8 reg_no, int word_rate) {
-	Serial.print("Prepare for conversion.\n");
-	u32 final_result = 0;
-	int waste_time, i;
-	u32 cfg_reg =  (u32)REG_CONFIG_VRS;
-	int setup_reg = ((setup_reg_no % 2 == 1) ? ((word_rate) << 16) : word_rate);
-	u8 cmd;
-
-	switch (convert_type)
-	{
-		case SINGLE_CONVERSION: cmd = CMD_CONVERSION_SIGLE; break;
-		case CONTINUED_CONVERSION: cmd = CMD_CONVERSION_CONTINU; break; 
-	}
-
-	CS5530_Write_Reg(CMD_CONFIG_WRITE, cfg_reg);
-    delay(10);
-	//CS5530_WriteByte(cmd);
-	Serial.print("Conversion begins...\n");
-
-	delay(10);
-	u8 test = 0;
-//	test = CS5530_ReadByte();   // wastercycles
-	//final_result = CS5530_Read4Bytes();
-
-
-	Serial.print("The raw result is:"); Serial.println(final_result,BIN);
-	Serial.print("The raw result is:"); Serial.println(final_result);
-
-	final_result = TwoComplement(final_result);
-	Serial.print("The final result is:"); Serial.println(final_result,BIN);
-	Serial.print("The fianl result is:"); Serial.println(final_result);
-
-	final_result = final_result * 500 / 0x7fffff;
-	Serial.print("The fianl result is:"); Serial.println(final_result);
-
-	return 1; 
-}
-
-
-
