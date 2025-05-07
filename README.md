@@ -39,7 +39,7 @@ An [Arduino](https://arduino.cc/) library for sending and receiving data using [
 1. Choose `Sketch` -> `Include Library` -> `Manage Libraries...`
 2. Type `CS5530` into the search box.
 3. Click the row to select the library.
-4. Click the `Install` button to install the library.
+4. Click the `Install` button to install the library..
 
 ### Using Git
 
